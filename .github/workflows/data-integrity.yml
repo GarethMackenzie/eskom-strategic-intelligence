@@ -1,0 +1,39 @@
+name: Data Integrity CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  data-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependency
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+
+      - name: Compile Python
+        run: python -m compileall -q src scripts tests
+
+      - name: Build analytical database and validate all SQL
+        run: python scripts/build_project.py
+
+      - name: Run automated tests
+        run: python -m pytest -q
+
+      - name: Confirm release outputs
+        run: |
+          test -s data/processed/eskom_intelligence.sqlite
+          grep -q '"status": "PASS"' data/processed/qa_summary.json

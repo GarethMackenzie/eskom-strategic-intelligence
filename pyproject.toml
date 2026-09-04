@@ -1,0 +1,10 @@
+[project]
+name = "eskom-strategic-intelligence"
+version = "3.0.0"
+description = "Reproducible public-data analytics case study for Eskom strategic intelligence"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra"

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.test-deps/
+test_dependencies/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+*.pbix.bak
+.DS_Store
+data/raw/*.tmp
+data/processed/*
+!data/processed/.gitkeep

@@ -1,0 +1,332 @@
+// ============================================================================
+// measures.dax
+// Rewritten per docs/technical_audit.md (P0-3, P0-4, P0-5, P2 fixes).
+//
+// KEY PRINCIPLE: fact_municipal_debt holds multiple point-in-time stock
+// balances for the same group-total entity (FY2025 year-end, FY2026
+// year-end, June-2026 disclosure). A measure that SUMs this column without
+// a "pick exactly one observation" rule will silently add unrelated
+// snapshots together. Every "current value" measure below explicitly
+// resolves to ONE observation via a documented LATEST rule, never a bare SUM.
+//
+// Scenario rows now live in a physically separate table
+// (fact_municipal_debt_scenario) so they cannot leak into an actuals SUM
+// even by accident -- but the DAX below is still written defensively.
+// ============================================================================
+
+// ---- Municipal Debt (Actuals) --------------------------------------------
+
+// LATEST = the single most recent observation by date_key for the group-total
+// row (municipality_key = 0), regardless of whether the visual has a date
+// filter applied. This is deliberately NOT filter-context-dependent on the
+// report's date slicer -- an executive card should show "the latest we know"
+// unless the user has explicitly drilled into a specific historical period
+// (see `Municipal Debt at Selected Date` below for that case).
+Latest Reported Municipal Debt =
+VAR LatestDateKey =
+    CALCULATE (
+        MAX ( fact_municipal_debt[date_key] ),
+        fact_municipal_debt[municipality_key] = 0,
+        ALL ( dim_date )              // ignore any report-level date filter deliberately
+    )
+RETURN
+    CALCULATE (
+        SUM ( fact_municipal_debt[gross_arrears_rand] ),
+        fact_municipal_debt[municipality_key] = 0,
+        fact_municipal_debt[date_key] = LatestDateKey
+    )
+
+// Municipal Debt at Selected Date -- respects whatever date filter context
+// the report page/slicer provides (e.g. a "as at FY2026 year-end" bookmark),
+// picking the latest observation WITHIN that filtered window rather than
+// globally latest. Use this on pages with an explicit date/year slicer;
+// use Latest Reported Municipal Debt on unfiltered executive cards.
+Municipal Debt at Selected Date =
+VAR SelectedMaxDateKey = MAX ( fact_municipal_debt[date_key] )   // respects active filter context
+RETURN
+    CALCULATE (
+        SUM ( fact_municipal_debt[gross_arrears_rand] ),
+        fact_municipal_debt[municipality_key] = 0,
+        fact_municipal_debt[date_key] = SelectedMaxDateKey
+    )
+
+// Latest Fiscal Year-End Municipal Debt -- resolves independently from the
+// latest in-year observation. This measure is the only valid numerator for
+// fiscal-year YoY comparisons; June 2026's R119.9bn snapshot is deliberately
+// excluded in favour of FY2026 year-end's R111.6bn.
+Latest Fiscal Year-End Municipal Debt =
+VAR LatestYearEndDateKey =
+    CALCULATE (
+        MAX ( fact_municipal_debt[date_key] ),
+        fact_municipal_debt[municipality_key] = 0,
+        FILTER ( ALL ( dim_date ), dim_date[is_fiscal_year_end] = TRUE () )
+    )
+RETURN
+    CALCULATE (
+        SUM ( fact_municipal_debt[gross_arrears_rand] ),
+        fact_municipal_debt[municipality_key] = 0,
+        fact_municipal_debt[date_key] = LatestYearEndDateKey
+    )
+
+// Prior-Year Comparable Debt -- the most recent FISCAL-YEAR-END observation
+// strictly before the current latest one. Explicitly restricted to
+// is_fiscal_year_end = TRUE so the June-2026 in-year disclosure is never
+// mistaken for a year-end comparator.
+Prior-Year Comparable Debt =
+VAR LatestYearEndDateKey =
+    CALCULATE (
+        MAX ( fact_municipal_debt[date_key] ),
+        fact_municipal_debt[municipality_key] = 0,
+        FILTER ( ALL ( dim_date ), dim_date[is_fiscal_year_end] = TRUE () )
+    )
+VAR PriorYearEndDateKey =
+    CALCULATE (
+        MAX ( fact_municipal_debt[date_key] ),
+        fact_municipal_debt[municipality_key] = 0,
+        fact_municipal_debt[date_key] < LatestYearEndDateKey,
+        FILTER ( ALL ( dim_date ), dim_date[is_fiscal_year_end] = TRUE () )
+    )
+RETURN
+    CALCULATE (
+        SUM ( fact_municipal_debt[gross_arrears_rand] ),
+        fact_municipal_debt[municipality_key] = 0,
+        fact_municipal_debt[date_key] = PriorYearEndDateKey
+    )
+
+Municipal Debt YoY % =
+VAR CurrentYearEnd = [Latest Fiscal Year-End Municipal Debt]
+VAR PriorYearEnd = [Prior-Year Comparable Debt]
+RETURN
+    DIVIDE ( CurrentYearEnd - PriorYearEnd, PriorYearEnd )
+
+Municipal Debt Absolute Change =
+VAR CurrentYearEnd = [Latest Fiscal Year-End Municipal Debt]
+VAR PriorYearEnd = [Prior-Year Comparable Debt]
+RETURN
+    CurrentYearEnd - PriorYearEnd
+
+// CAGR -- rebuilt per Step 10. Uses first and last ACTUAL fiscal-year-end
+// observations only (never a mid-year disclosure, never a scenario --
+// scenario rows are structurally unreachable here since this measure only
+// ever touches fact_municipal_debt, not fact_municipal_debt_scenario).
+// Returns BLANK() with a paired Data Sufficiency Status measure below when
+// fewer than 5 comparable annual points exist -- currently the case (n=3).
+Municipal Debt CAGR =
+VAR YearsAvailable =
+    CALCULATE (
+        DISTINCTCOUNT ( dim_date[fiscal_year] ),
+        fact_municipal_debt[municipality_key] = 0,
+        dim_date[is_fiscal_year_end] = TRUE
+    )
+VAR FirstDateKey =
+    CALCULATE (
+        MIN ( fact_municipal_debt[date_key] ),
+        fact_municipal_debt[municipality_key] = 0,
+        dim_date[is_fiscal_year_end] = TRUE,
+        ALL ( dim_date )
+    )
+VAR LastDateKey =
+    CALCULATE (
+        MAX ( fact_municipal_debt[date_key] ),
+        fact_municipal_debt[municipality_key] = 0,
+        dim_date[is_fiscal_year_end] = TRUE,
+        ALL ( dim_date )
+    )
+VAR FirstValue =
+    CALCULATE ( SUM ( fact_municipal_debt[gross_arrears_rand] ), fact_municipal_debt[date_key] = FirstDateKey )
+VAR LastValue =
+    CALCULATE ( SUM ( fact_municipal_debt[gross_arrears_rand] ), fact_municipal_debt[date_key] = LastDateKey )
+RETURN
+    IF (
+        YearsAvailable < 5,
+        BLANK (),
+        ( DIVIDE ( LastValue, FirstValue ) ) ^ ( 1 / ( YearsAvailable - 1 ) ) - 1
+    )
+
+Municipal Debt Data Sufficiency Status =
+VAR YearsAvailable =
+    CALCULATE (
+        DISTINCTCOUNT ( dim_date[fiscal_year] ),
+        fact_municipal_debt[municipality_key] = 0,
+        dim_date[is_fiscal_year_end] = TRUE
+    )
+RETURN
+    IF (
+        YearsAvailable < 5,
+        "Insufficient comparable history for CAGR -- requires >= 5 annual observations (n=" & YearsAvailable & " available). See docs/limitations.md Data Gap #4.",
+        "Sufficient history (n=" & YearsAvailable & " years)"
+    )
+
+// ---- Municipal Debt (Scenario -- physically separate table) --------------
+
+// Deliberately touches ONLY fact_municipal_debt_scenario, never
+// fact_municipal_debt, so it is structurally impossible for this to
+// contaminate any actuals measure above.
+Municipal Debt Scenario (No Intervention, FY2031) =
+CALCULATE (
+    SUM ( fact_municipal_debt_scenario[projected_arrears_rand] ),
+    fact_municipal_debt_scenario[scenario_name] = "No Intervention (Eskom Management)"
+)
+// MANDATORY: bind only to visuals on "05 | Scenario & Decision Lab", always
+// paired with a persistent "SCENARIO -- NOT MANAGEMENT FORECAST" page label.
+
+// ---- Electricity Sales -----------------------------------------------------
+
+Latest Electricity Sales TWh =
+VAR LatestDateKey =
+    CALCULATE (
+        MAX ( fact_electricity_sales[date_key] ),
+        fact_electricity_sales[segment_key] = 0,
+        ALL ( dim_date )
+    )
+RETURN
+    CALCULATE (
+        SUM ( fact_electricity_sales[sales_twh] ),
+        fact_electricity_sales[segment_key] = 0,
+        fact_electricity_sales[date_key] = LatestDateKey
+    )
+
+Prior-Year Electricity Sales TWh =
+VAR LatestDateKey =
+    CALCULATE (
+        MAX ( fact_electricity_sales[date_key] ),
+        fact_electricity_sales[segment_key] = 0,
+        ALL ( dim_date )
+    )
+VAR PriorDateKey =
+    CALCULATE (
+        MAX ( fact_electricity_sales[date_key] ),
+        fact_electricity_sales[segment_key] = 0,
+        fact_electricity_sales[date_key] < LatestDateKey,
+        ALL ( dim_date )
+    )
+RETURN
+    CALCULATE (
+        SUM ( fact_electricity_sales[sales_twh] ),
+        fact_electricity_sales[segment_key] = 0,
+        fact_electricity_sales[date_key] = PriorDateKey
+    )
+
+Sales YoY % =
+DIVIDE (
+    [Latest Electricity Sales TWh] - [Prior-Year Electricity Sales TWh],
+    [Prior-Year Electricity Sales TWh]
+)
+
+Revenue per kWh =
+DIVIDE (
+    CALCULATE (
+        SUM ( fact_electricity_sales[revenue_rand] ),
+        fact_electricity_sales[segment_key] = 0,
+        fact_electricity_sales[date_key] = CALCULATE ( MAX ( fact_electricity_sales[date_key] ), ALL ( dim_date ) )
+    ),
+    [Latest Electricity Sales TWh] * 1000000000
+)
+// Blended average across all customer segments -- see kpi_dictionary.md
+// caution against presenting this as a single representative price.
+
+// Segment Contribution % -- FIXED filter-context bug (Step 11): the prior
+// version divided a segment-filtered sum by [Electricity Sales TWh], which
+// itself carried a segment_key=0 filter INSIDE the measure -- meaning the
+// denominator ignored the visual's segment filter entirely rather than
+// correctly removing only the segment dimension while keeping the date
+// context. Rewritten to explicitly strip only the segment filter:
+Segment Contribution % =
+DIVIDE (
+    SUM ( fact_electricity_sales[sales_twh] ),                      // respects visual's segment + date filters
+    CALCULATE (
+        SUM ( fact_electricity_sales[sales_twh] ),
+        REMOVEFILTERS ( dim_customer_segment ),                      // strip ONLY the segment filter
+        fact_electricity_sales[segment_key] = 0                       // denominator = the ALL-SEGMENTS row for the same date context
+    )
+)
+// Still returns BLANK() in practice until Data Gap #2 (segment-level TWh) is
+// closed -- no non-aggregate segment rows are populated yet -- but the
+// filter-context logic is now correct and will activate properly once data
+// is loaded, rather than needing a rewrite at that point.
+
+// ---- Security Metrics (rebuilt against fact_security_metric) -------------
+
+// Generic latest-value resolver pattern repeated per metric_key, because
+// each metric can in principle be refreshed independently now that lineage
+// is metric-level (Step 4) rather than one shared row.
+Latest Security Estimated Loss =
+VAR LatestDateKey =
+    CALCULATE (
+        MAX ( fact_security_metric[reporting_date_key] ),
+        fact_security_metric[incident_type_key] = 0,
+        fact_security_metric[metric_key] = 2,        -- 'Estimated Financial Loss'
+        ALL ( dim_date )
+    )
+RETURN
+    CALCULATE (
+        SUM ( fact_security_metric[metric_value] ),
+        fact_security_metric[incident_type_key] = 0,
+        fact_security_metric[metric_key] = 2,
+        fact_security_metric[reporting_date_key] = LatestDateKey
+    )
+
+Latest Security Recoveries =
+VAR LatestDateKey =
+    CALCULATE (
+        MAX ( fact_security_metric[reporting_date_key] ),
+        fact_security_metric[incident_type_key] = 0,
+        fact_security_metric[metric_key] = 4,        -- 'Recoveries'
+        ALL ( dim_date )
+    )
+RETURN
+    CALCULATE (
+        SUM ( fact_security_metric[metric_value] ),
+        fact_security_metric[incident_type_key] = 0,
+        fact_security_metric[metric_key] = 4,
+        fact_security_metric[reporting_date_key] = LatestDateKey
+    )
+
+Security Recovery Rate =
+DIVIDE ( [Latest Security Recoveries], [Latest Security Estimated Loss] )
+// Aggregate physical-security recovery rate -- NOT coal-specific. See the
+// mandatory scope note on incident_type_key = 0 in docs/data_model.md.
+
+// Crime Incidents YoY % -- FIXED (Step 11): the prior version SUMmed a
+// pre-computed YoY-percentage column, which is structurally unsafe (summing
+// percentages across periods is meaningless the moment a second period
+// exists). Now resolves to the single latest YoY-change observation for
+// metric_key = 1 ('Incident Count YoY Change'), which already IS a
+// percentage by construction, so no arithmetic is performed on it beyond
+// selecting the right single row.
+Crime Incidents YoY % =
+VAR LatestDateKey =
+    CALCULATE (
+        MAX ( fact_security_metric[reporting_date_key] ),
+        fact_security_metric[incident_type_key] = 0,
+        fact_security_metric[metric_key] = 1,
+        ALL ( dim_date )
+    )
+RETURN
+    CALCULATE (
+        SUM ( fact_security_metric[metric_value] ),
+        fact_security_metric[incident_type_key] = 0,
+        fact_security_metric[metric_key] = 1,
+        fact_security_metric[reporting_date_key] = LatestDateKey
+    ) / 100
+
+// ---- Data As Of / Freshness (fixes P0-4) -----------------------------------
+
+// FIXED: no longer MAX(dim_date[calendar_date]) over a dimension that
+// contains a 2031 scenario horizon date. Resolves instead from
+// fact_source_refresh / vw_report_freshness, which by construction only
+// contains actual disclosure-event dates (scenario dataset IDs are excluded
+// at load time -- see sql/13_source_freshness.sql).
+Data Reported As Of =
+VAR ReportedDate = MAX ( fact_source_refresh[source_reporting_date] )
+RETURN
+    "Data reported as of " & FORMAT ( ReportedDate, "d mmmm yyyy" )
+
+Data Last Refreshed =
+VAR RefreshedAt = MAX ( fact_source_refresh[retrieved_at] )
+RETURN
+    "Data last refreshed " & FORMAT ( RefreshedAt, "d mmmm yyyy hh:mm" )
+
+// Combined label for report footers.
+Data Freshness Label =
+[Data Reported As Of] & " · " & [Data Last Refreshed] & " · see docs/data_source_register.csv"
