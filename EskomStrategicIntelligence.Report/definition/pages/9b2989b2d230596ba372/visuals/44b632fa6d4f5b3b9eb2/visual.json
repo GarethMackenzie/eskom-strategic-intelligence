@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "44b632fa6d4f5b3b9eb2",
+  "position": {
+    "x": 635,
+    "y": 94,
+    "z": 7,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 7
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Scenario Municipal Arrears FY2031"
+                }
+              },
+              "queryRef": "MeasureCatalog.Scenario Municipal Arrears FY2031",
+              "nativeQueryRef": "Scenario Municipal Arrears FY2031"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scenario Municipal Arrears FY2031'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "fdf92c2884b45f438de4",
+  "position": {
+    "x": 640,
+    "y": 232,
+    "z": 11,
+    "height": 195,
+    "width": 600,
+    "tabOrder": 11
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SourceRegister"
+                    }
+                  },
+                  "Property": "SourceTier"
+                }
+              },
+              "queryRef": "SourceRegister.SourceTier",
+              "nativeQueryRef": "SourceTier"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Governed Source Count"
+                }
+              },
+              "queryRef": "MeasureCatalog.Governed Source Count",
+              "nativeQueryRef": "Governed Source Count"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sources by tier'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

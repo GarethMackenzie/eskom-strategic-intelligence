@@ -1,0 +1,57 @@
+table FactMetric
+	column PeriodKey
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: PeriodKey
+
+	column Domain
+		dataType: string
+		sourceColumn: Domain
+
+	column Metric
+		dataType: string
+		sourceColumn: Metric
+
+	column Value
+		dataType: double
+		summarizeBy: none
+		sourceColumn: Value
+
+	column Unit
+		dataType: string
+		sourceColumn: Unit
+
+	column EvidenceType
+		dataType: string
+		sourceColumn: EvidenceType
+
+	column SourceDatasetId
+		dataType: string
+		sourceColumn: SourceDatasetId
+
+	partition FactMetric = m
+		mode: import
+		source = ```
+			#table(
+				type table [PeriodKey = Int64.Type, Domain = text, Metric = text, Value = number, Unit = text, EvidenceType = text, SourceDatasetId = text],
+				{
+				{20240331, "Municipal Debt", "Municipal Arrears - Year End", 55300000000, "Rand", "FACT_REPORTED", "DS031"},
+				{20250331, "Municipal Debt", "Municipal Arrears - Year End", 94600000000, "Rand", "FACT_REPORTED", "DS031"},
+				{20260331, "Municipal Debt", "Municipal Arrears - Year End", 111600000000, "Rand", "FACT_REPORTED", "DS001"},
+				{20260630, "Municipal Debt", "Municipal Arrears - In Year", 119900000000, "Rand", "FACT_REPORTED", "DS002"},
+				{20250331, "Operations", "Electricity Sales", 189.7, "TWh", "FACT_REPORTED", "DS006"},
+				{20260331, "Operations", "Electricity Sales", 178.0, "TWh", "FACT_REPORTED", "DS006"},
+				{20250331, "Operations", "Energy Availability Factor", 60.6, "Percent", "FACT_REPORTED", "DS012"},
+				{20260331, "Operations", "Energy Availability Factor", 65.16, "Percent", "FACT_REPORTED", "DS012"},
+				{20260331, "Financial", "Net Profit After Tax", 30300000000, "Rand", "FACT_REPORTED", "DS009"},
+				{20260331, "Financial", "Electricity Revenue", 354700000000, "Rand", "FACT_REPORTED", "DS007"},
+				{20260331, "Security", "Security Losses", 191000000, "Rand", "FACT_REPORTED", "DS015"},
+				{20260331, "Security", "Security Recoveries", 34000000, "Rand", "FACT_REPORTED", "DS017"},
+				{20260331, "Security", "Arrests", 505, "Count", "FACT_REPORTED", "DS016"},
+				{20260331, "Security", "Convictions", 13, "Count", "FACT_REPORTED", "DS018"}
+				}
+			)
+			```
+
+	annotation PBI_ResultType = Table

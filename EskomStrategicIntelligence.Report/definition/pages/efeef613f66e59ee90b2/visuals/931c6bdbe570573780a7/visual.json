@@ -1,0 +1,77 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "931c6bdbe570573780a7",
+  "position": {
+    "x": 20,
+    "y": 232,
+    "z": 10,
+    "height": 195,
+    "width": 600,
+    "tabOrder": 10
+  },
+  "visual": {
+    "visualType": "donutChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SourceRegister"
+                    }
+                  },
+                  "Property": "EvidenceType"
+                }
+              },
+              "queryRef": "SourceRegister.EvidenceType",
+              "nativeQueryRef": "EvidenceType"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Governed Source Count"
+                }
+              },
+              "queryRef": "MeasureCatalog.Governed Source Count",
+              "nativeQueryRef": "Governed Source Count"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sources by evidence type'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

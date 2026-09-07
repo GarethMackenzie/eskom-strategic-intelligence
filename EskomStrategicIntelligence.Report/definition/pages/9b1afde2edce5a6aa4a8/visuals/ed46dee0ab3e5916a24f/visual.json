@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "ed46dee0ab3e5916a24f",
+  "position": {
+    "x": 225,
+    "y": 94,
+    "z": 5,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Latest Electricity Sales"
+                }
+              },
+              "queryRef": "MeasureCatalog.Latest Electricity Sales",
+              "nativeQueryRef": "Latest Electricity Sales"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Latest Electricity Sales'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

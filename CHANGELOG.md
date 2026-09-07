@@ -1,5 +1,47 @@
 # Changelog
 
+## [Phase 4 Power BI release] - 2026-09-07
+
+### Corrected
+
+- Replaced invalid inline Power Query `type` field tokens with Desktop-compatible M tokens.
+- Renamed the reserved `Measures` semantic-model table to `MeasureCatalog` and updated every PBIR
+  visual binding.
+
+### Verified
+
+- Power BI Desktop 2.157.1354.0 (August 2026) opened and refreshed the project successfully.
+- All six tables, three relationships, five pages, 68 visuals and 30 DAX measures loaded without
+  engine or visual errors.
+- 11 build-time data checks and 27 pytest release tests pass.
+- Power BI Service publication remains intentionally pending an authorised target workspace.
+
+## [Phase 4 Power BI release candidate] - 2026-09-04
+
+### Added
+
+- Complete source-controlled `EskomStrategicIntelligence.pbip` project.
+- Enhanced PBIR report with 5 executive pages, 68 visuals and page-level slicers.
+- TMDL semantic model with 6 tables, 3 relationships and 30 explicit DAX measures.
+- Tariff and affordability page covering implemented FY2026/27 rates and the qualified 8.83%
+  FY2027/28 average path.
+- Deterministic Power BI build generator and labelled SVG project preview.
+- `docs/POWER_BI_RUNBOOK.md` covering Desktop validation and safe Service publication.
+- Three governed tariff sources (DS035-DS037), a tariff fact table and reporting view.
+- Power BI structural, lineage and no-local-path release tests.
+
+### Verified
+
+- 11 build-time data checks pass.
+- 26 pytest release tests pass, including a no-overlap canvas regression check.
+- All Power BI JSON parses, all visual measure references resolve and all project paths are
+  portable.
+
+### Remaining runtime gate
+
+- Power BI Desktop open/refresh/interaction and Power BI Service publication must be verified in
+  those products before the project is described as a live interactive dashboard.
+
 ## [Release review] - 2026-09-04
 
 ### Corrected

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "40cd5f3d0a0253f984a7",
+  "position": {
+    "x": 1045,
+    "y": 94,
+    "z": 9,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 9
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Governed Source Count"
+                }
+              },
+              "queryRef": "MeasureCatalog.Governed Source Count",
+              "nativeQueryRef": "Governed Source Count"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Governed Source Count'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "50cc9ae973cf56f09965",
+  "position": {
+    "x": 20,
+    "y": 445,
+    "z": 13,
+    "height": 210,
+    "width": 1240,
+    "tabOrder": 13
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMetric"
+                    }
+                  },
+                  "Property": "Domain"
+                }
+              },
+              "queryRef": "FactMetric.Domain",
+              "nativeQueryRef": "Domain"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMetric"
+                    }
+                  },
+                  "Property": "Metric"
+                }
+              },
+              "queryRef": "FactMetric.Metric",
+              "nativeQueryRef": "Metric"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMetric"
+                    }
+                  },
+                  "Property": "Value"
+                }
+              },
+              "queryRef": "FactMetric.Value",
+              "nativeQueryRef": "Value"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMetric"
+                    }
+                  },
+                  "Property": "Unit"
+                }
+              },
+              "queryRef": "FactMetric.Unit",
+              "nativeQueryRef": "Unit"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMetric"
+                    }
+                  },
+                  "Property": "SourceDatasetId"
+                }
+              },
+              "queryRef": "FactMetric.SourceDatasetId",
+              "nativeQueryRef": "SourceDatasetId"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Governed metric evidence — security rows are domain-labelled'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

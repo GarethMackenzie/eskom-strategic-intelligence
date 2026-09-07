@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "402e86f64a1159ffb7b9",
+  "position": {
+    "x": 20,
+    "y": 676,
+    "z": 15,
+    "height": 26,
+    "width": 1240,
+    "tabOrder": 15
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "PUBLIC-DATA PORTFOLIO PROJECT  •  NO CUSTOMER OR OPERATIONAL DATA  •  SOURCE-VALIDATED 04 SEP 2026  •  POWER BI DESKTOP/SERVICE RUNTIME STATUS IN docs/POWER_BI_RUNBOOK.md"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

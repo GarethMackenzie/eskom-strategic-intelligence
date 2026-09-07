@@ -32,9 +32,14 @@ CREATE TABLE dim_date (
 
 INSERT INTO dim_date (date_key, calendar_date, fiscal_year, fiscal_year_label, is_fiscal_year_end, is_scenario_horizon, observation_type, source_dataset_id) VALUES
 (20240331, '2024-03-31', 2024, 'FY2024', TRUE,  FALSE, 'Year-End Reported', 'DS031'),
+(20250401, '2025-04-01', 2026, 'FY2025/26', FALSE, FALSE, 'Tariff Effective Date', 'DS035'),
 (20250331, '2025-03-31', 2025, 'FY2025', TRUE,  FALSE, 'Year-End Reported', 'DS006'),
 (20260331, '2026-03-31', 2026, 'FY2026', TRUE,  FALSE, 'Year-End Reported', 'DS001'),
+(20260401, '2026-04-01', 2027, 'FY2026/27', FALSE, FALSE, 'Tariff Effective Date', 'DS036'),
 (20260630, '2026-06-30', 2026, 'FY2026', FALSE, FALSE, 'In-Year Management Disclosure', 'DS002'),
+(20260701, '2026-07-01', 2027, 'FY2026/27', FALSE, FALSE, 'Tariff Effective Date', 'DS036'),
 (20260717, '2026-07-17', 2026, 'FY2026', FALSE, FALSE, 'Event-Driven', 'DS030'),
 (20260821, '2026-08-21', 2026, 'FY2026', FALSE, FALSE, 'Event-Driven', 'DS020'),
+(20260904, '2026-09-04', 2027, 'FY2026/27', FALSE, FALSE, 'Regulatory Consultation Update', 'DS037'),
+(20270401, '2027-04-01', 2028, 'FY2027/28', FALSE, FALSE, 'Intended Tariff Effective Date', 'DS035'),
 (20310331, '2031-03-31', 2031, 'FY2031', TRUE,  TRUE,  'Scenario Horizon', 'DS003');

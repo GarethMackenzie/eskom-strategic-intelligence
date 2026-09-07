@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "45faea90f40e551e8d44",
+  "position": {
+    "x": 225,
+    "y": 94,
+    "z": 5,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "FY2026/27 Municipal Increase"
+                }
+              },
+              "queryRef": "MeasureCatalog.FY2026/27 Municipal Increase",
+              "nativeQueryRef": "FY2026/27 Municipal Increase"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'FY2026/27 Municipal Increase'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

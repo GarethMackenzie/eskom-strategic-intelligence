@@ -1,0 +1,129 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "ed372e40b9ca50688d90",
+  "position": {
+    "x": 20,
+    "y": 445,
+    "z": 12,
+    "height": 210,
+    "width": 1240,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SourceRegister"
+                    }
+                  },
+                  "Property": "DatasetId"
+                }
+              },
+              "queryRef": "SourceRegister.DatasetId",
+              "nativeQueryRef": "DatasetId"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SourceRegister"
+                    }
+                  },
+                  "Property": "Metric"
+                }
+              },
+              "queryRef": "SourceRegister.Metric",
+              "nativeQueryRef": "Metric"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SourceRegister"
+                    }
+                  },
+                  "Property": "Publisher"
+                }
+              },
+              "queryRef": "SourceRegister.Publisher",
+              "nativeQueryRef": "Publisher"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SourceRegister"
+                    }
+                  },
+                  "Property": "SourceTier"
+                }
+              },
+              "queryRef": "SourceRegister.SourceTier",
+              "nativeQueryRef": "SourceTier"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SourceRegister"
+                    }
+                  },
+                  "Property": "PublicationDate"
+                }
+              },
+              "queryRef": "SourceRegister.PublicationDate",
+              "nativeQueryRef": "PublicationDate"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SourceRegister"
+                    }
+                  },
+                  "Property": "VerificationStatus"
+                }
+              },
+              "queryRef": "SourceRegister.VerificationStatus",
+              "nativeQueryRef": "VerificationStatus"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Evidence register'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

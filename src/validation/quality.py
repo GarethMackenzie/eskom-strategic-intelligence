@@ -67,6 +67,18 @@ def run_quality_checks(connection: sqlite3.Connection) -> list[CheckResult]:
                JOIN stg_data_source_register s ON r.dataset_id=s.dataset_id
                WHERE s.evidence_type LIKE 'SCENARIO%'""",
         ),
+        _empty_query(
+            connection,
+            "tariff_missing_lineage",
+            """SELECT effective_date_key FROM fact_tariff_adjustment
+               WHERE source_dataset_id IS NULL OR status_source_dataset_id IS NULL""",
+        ),
+        _empty_query(
+            connection,
+            "tariff_rate_range",
+            """SELECT effective_date_key FROM fact_tariff_adjustment
+               WHERE increase_pct <= 0 OR increase_pct >= 100""",
+        ),
     ]
 
     freshness = connection.execute(
@@ -75,7 +87,7 @@ def run_quality_checks(connection: sqlite3.Connection) -> list[CheckResult]:
     checks.append(
         CheckResult(
             "report_freshness",
-            freshness == "2026-08-31",
+            freshness == "2026-09-04",
             f"latest actual disclosure date={freshness}",
         )
     )

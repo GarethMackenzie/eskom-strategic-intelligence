@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "3bb0749883d95511bb59",
+  "position": {
+    "x": 1045,
+    "y": 94,
+    "z": 9,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 9
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Electricity Revenue"
+                }
+              },
+              "queryRef": "MeasureCatalog.Electricity Revenue",
+              "nativeQueryRef": "Electricity Revenue"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Electricity Revenue'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

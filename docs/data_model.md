@@ -13,6 +13,7 @@ erDiagram
     DIM_DATE ||--o{ FACT_MUNICIPAL_DEBT_SCENARIO : "date_key"
     DIM_DATE ||--o{ FACT_ELECTRICITY_SALES : "date_key"
     DIM_DATE ||--o{ FACT_SECURITY_METRIC : "reporting_date_key"
+    DIM_DATE ||--o{ FACT_TARIFF_ADJUSTMENT : "effective_date_key"
     DIM_MUNICIPALITY ||--o{ FACT_MUNICIPAL_DEBT : "municipality_key"
     DIM_MUNICIPALITY }o--|| DIM_PROVINCE : "province_key"
     DIM_DEBT_STATUS ||--o{ FACT_MUNICIPAL_DEBT : "debt_status_key"
@@ -75,6 +76,22 @@ under one shared ID).
 categorical key, not a measure). **Foreign key:** `fact_security_case_event.case_id` →
 `fact_security_case.case_id`, allowing many events per case without overwriting history (Step 3
 fix — Phase 1 had no event-history concept, only a single mutable `legal_status` string per case).
+
+### fact_tariff_adjustment
+**Grain:** one row per (effective_date_key, customer_group). **Measure:** `increase_pct`, stored as
+the published average increase for that customer group or average price path. **Lineage:**
+`source_dataset_id` supports the numeric value and `status_source_dataset_id` supports the current
+regulatory status. The FY2027/28 8.83% row therefore points to NERSA's revenue-path decision
+(DS035) and separately to the 4 September 2026 retail-structure consultation update (DS037).
+An approved average revenue path is not automatically a final tariff for every customer category.
+
+## Power BI semantic model
+
+The source-controlled TMDL model contains `DimPeriod`, `FactMetric`, `FactTariff`, `FactScenario`,
+`SourceRegister` and `Measures`. Three single-direction many-to-one relationships connect the fact
+tables to `DimPeriod`. Small public-data observations are embedded as inline Power Query tables,
+making the `.pbip` reproducible without local paths or credentials. SQLite remains the executable
+analytical-engineering layer; TMDL is the report-serving layer.
 
 ## Reconciliation notes (Step 7 explicit requirement)
 - Phase 1's `docs/data_model.md` described `FactMunicipalDebt`'s `status` column as if a

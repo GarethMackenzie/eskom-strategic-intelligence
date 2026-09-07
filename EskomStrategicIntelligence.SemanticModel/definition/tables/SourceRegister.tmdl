@@ -1,0 +1,88 @@
+table SourceRegister
+	column DatasetId
+		dataType: string
+		isKey
+		sourceColumn: DatasetId
+
+	column Metric
+		dataType: string
+		sourceColumn: Metric
+
+	column Publisher
+		dataType: string
+		sourceColumn: Publisher
+
+	column SourceTier
+		dataType: string
+		sourceColumn: SourceTier
+
+	column PublicationDate
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		sourceColumn: PublicationDate
+
+	column EvidenceType
+		dataType: string
+		sourceColumn: EvidenceType
+
+	column VerificationStatus
+		dataType: string
+		sourceColumn: VerificationStatus
+
+	column SourceUrl
+		dataType: string
+		sourceColumn: SourceUrl
+
+	column IsPrimary
+		dataType: boolean
+		sourceColumn: IsPrimary
+
+	partition SourceRegister = m
+		mode: import
+		source = ```
+			#table(
+				type table [DatasetId = text, Metric = text, Publisher = text, SourceTier = text, PublicationDate = date, EvidenceType = text, VerificationStatus = text, SourceUrl = text, IsPrimary = logical],
+				{
+				{"DS001", "Gross municipal arrear debt (year-end)", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS002", "Municipal arrear debt (post-year-end read)", "Daily Maverick (reporting the results-presentation Q&A)", "B", #date(2026, 8, 31), "FACT_REPORTED", "Exact figure secondary-sourced; official release corroborates approximately R119 billion", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", false},
+				{"DS003", "Projected municipal arrears without intervention", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "SCENARIO_MANAGEMENT", "Verified against direct official release", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS004", "Municipal debt written off under debt-relief programme (FY2026)", "TechCentral (reporting results presentation)", "B", #date(2026, 8, 31), "FACT_REPORTED", "Unverified against primary Eskom/Treasury document", "https://techcentral.co.za/eskom-results-fy2026-profit-doubles/285533/", false},
+				{"DS005", "Municipalities share of Eskom electricity sales", "Reuters (via CNBC Africa) / Daily Maverick", "B", #date(2026, 8, 31), "FACT_REPORTED", "Corroborated: Reuters/CNBC Africa states >40%; Daily Maverick states 44%", "https://www.cnbcafrica.com/2026/south-africas-eskom-reports-second-consecutive-profitable-year", false},
+				{"DS006", "Total electricity sales volume FY2026", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS007", "Electricity revenue FY2026", "Daily Maverick (reporting results presentation figures)", "B", #date(2026, 8, 31), "FACT_REPORTED", "Corroborated by TechCentral and Rio Times coverage", "https://www.dailymaverick.co.za/article/2026-08-31-ramokgopa-sets-record-straight-on-eskom-turnaround-buying-board-time-for-reforms/", false},
+				{"DS008", "NERSA average tariff increase FY2026 (direct customers 1 Apr 2025 / municipal 1 Jul 2025)", "NERSA (official decision document)", "A1", #date(2025, 3, 11), "FACT_REPORTED", "Verified against primary regulator document", "https://www.nersa.org.za/file/5862", true},
+				{"DS009", "Net profit after tax FY2026", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS010", "Net debt", "TechCentral (reporting results presentation)", "B", #date(2026, 8, 31), "FACT_REPORTED", "Superseded / metric basis unresolved against official debt disclosures", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", false},
+				{"DS011", "Uncollectable billed revenue excluded from income statement", "Daily Maverick / Reuters (CNBC Africa)", "B", #date(2026, 8, 31), "FACT_REPORTED", "Corroborated independently by Reuters/CNBC Africa coverage of same presentation", "https://www.dailymaverick.co.za/article/2026-08-31-ramokgopa-sets-record-straight-on-eskom-turnaround-buying-board-time-for-reforms/", false},
+				{"DS012", "Energy Availability Factor (EAF)", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified against direct official release", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS013", "Load shedding FY2026", "The Citizen", "B", #date(2026, 8, 31), "FACT_REPORTED", "Unverified against primary Eskom document in this pass", "https://www.citizen.co.za/business/eskoms-r30-3bn-profit-rebound-faces-new-risks-from-municipal-debt/", false},
+				{"DS014", "Physical security crime-related incidents (overall, NOT coal-specific) -- count", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS015", "Estimated financial losses from physical-security crime (overall)", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS016", "Arrests related to physical-security crime (overall)", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS017", "Recoveries related to physical-security crime (overall)", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS018", "Convictions related to physical-security crime (overall)", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS019", "Eskom specialist coal/fuel-crime investigator procurement (organisational response)", "Sunday Times", "B", #date(2026, 8, 29), "INTERPRETATION_ONLY", "Single-source; not corroborated by a second outlet or an Eskom tender-portal listing", "https://www.sundaytimes.timeslive.co.za/business/news/2026-08-29-eskom-seeks-spies-to-infiltrate-coal-and-diesel-gangs/", false},
+				{"DS020", "City of Johannesburg / City Power overdue electricity debt -- SETTLED", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 21), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/city-of-johannesburg-settles-in-full-r5-25-billion-overdue-electricity-debt/", true},
+				{"DS021", "City of Johannesburg current-account commitment (Jul 2026)", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 21), "FACT_REPORTED", "Unverified whether payment was actually made by due date", "https://www.eskom.co.za/city-of-johannesburg-settles-in-full-r5-25-billion-overdue-electricity-debt/", true},
+				{"DS022", "SALGA-reported municipal debt to Eskom and water boards (historical, PRE-FY2026)", "Pressreader (archival republication of The Citizen KZN)", "C", #date(2019, 11, 14), "FACT_REPORTED", "Not independently corroborated; archival only", "https://www.pressreader.com/south-africa/the-citizen-kzn/20191114/281638192029913", false},
+				{"DS023", "Municipal debt-relief programme conditions", "National Treasury (MFMA Circular No. 124; May 2025 Budget Review Annexure A)", "A1", #date(2023, 5, 10), "FACT_REPORTED", "Verified against primary Treasury documents", "https://www.treasury.gov.za/comm_media/press/2023/20230510301%20MFMA%20Circular%20No.%20124%20-%20Municipal%20Debt%20Relief.pdf", true},
+				{"DS024A", "Eskom capital expenditure FY2026", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified against direct official release", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS024B", "Eskom capital expenditure guidance", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "SCENARIO_MANAGEMENT", "Verified against direct official release", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS025", "Concessionary large-customer pricing agreements", "Rio Times (reporting results presentation)", "B", #date(2026, 8, 31), "FACT_REPORTED", "NERSA approval date corroborated by TechCentral coverage", "https://www.riotimesonline.com/eskom-annual-profit-fy2026-falling-sales/", false},
+				{"DS026", "Camden Power Station heavy-fuel-oil theft case -- four Eskom employees and a contractor security guard arrested", "Eskom Holdings SOC Ltd", "A2", #date(2024, 8, 21), "FACT_REPORTED", "Verified", "https://www.eskom.co.za/four-eskom-employees-and-a-contractor-security-guard-arrested-for-theft-of-heavy-fuel-oil-at-camden-power-station/", true},
+				{"DS027", "Tutuka Power Station dome-valve theft case -- Eskom supplier and brother arrested", "Engineering News (reporting Eskom statement)", "B", #date(2025, 3, 5), "FACT_REPORTED", "Corroborated by Central News South Africa republication of same Eskom statement", "https://www.engineeringnews.co.za/article/eskom-reports-successes-in-collaboration-with-law-enforcement-2025-03-05", false},
+				{"DS028", "NATJOINTS-coordinated arrests -- aggregate financial impact of a cluster of cases", "SAnews (South African Government News Agency)", "A2", #date(2025, 3, 5), "FACT_REPORTED", "Verified via official government news agency", "https://www.sanews.gov.za/south-africa/criminality-will-be-dealt-decisively-eskom", true},
+				{"DS029", "Municipal arrears growth per Eskom CFO testimony to Parliament", "Parliamentary Monitoring Group (PMG) -- official committee-meeting minutes", "A1", #date(2026, 7, 1), "FACT_REPORTED", "Verified against primary PMG committee minutes", "https://pmg.org.za/committee-meeting/40936/", true},
+				{"DS030", "Provincial concentration of municipal arrears to Eskom", "Engineering News (Creamer Media)", "B", #date(2026, 7, 17), "FACT_REPORTED", "Single-source; not yet corroborated by a second outlet or a primary Eskom/Treasury provincial table", "https://www.engineeringnews.co.za/article/sa-municipal-debt-is-dominated-by-one-creditor-eskom-2026-07-17", false},
+				{"DS031", "National Treasury MTBPS-sourced municipal arrears series", "ESI-Africa / joburgetc.com (reporting National Treasury MTBPS statements)", "B", #date(2026, 2, 17), "FACT_REPORTED", "Aug/Sep 2025 figures single-sourced and not cross-verified against a primary Treasury MTBPS document in this pass", "https://www.esi-africa.com/news/eskom-municipalities-energy-debt-pact-deepens/", false},
+				{"DS032", "Section 41 MFMA municipal arrears figure and debt-relief programme compliance", "Parliamentary Monitoring Group (PMG) -- official Questions to Ministers record", "A1", #date(2026, 7, 1), "FACT_REPORTED", "Verified against primary PMG record", "https://pmg.org.za/question_replies/4/?filter%5Bminister%5D=5", true},
+				{"DS033", "Debt-relief programme non-compliance and termination process", "MyBroadband (reporting Parliamentary Q&A)", "B", #date(2026, 5, 27), "FACT_REPORTED", "Not yet cross-verified against the primary PMG question-reply record for this specific question", "https://mybroadband.co.za/news/energy/649937-bad-news-for-61-cities-and-towns-in-south-africa-that-keep-breaking-eskom-debt-relief-conditions.html", false},
+				{"DS034", "Estimated surplus generation capacity", "Eskom Holdings SOC Ltd", "A2", #date(2026, 8, 31), "FACT_REPORTED", "Verified against direct official release", "https://www.eskom.co.za/eskom-reports-second-consecutive-profitable-year-as-turnaround-strategy-execution-strengthens-operational-recovery-energy-security-and-financial-sustainability/", true},
+				{"DS035", "MYPD6 approved revenue path and estimated average price impact", "National Energy Regulator of South Africa", "A2", #date(2025, 8, 27), "FACT_REPORTED", "Verified against direct NERSA statement", "https://www.nersa.org.za/files/files/2025/08/Mediastatement-NERSAandEskomsettlementontheSixthMulti-YearPriceDeterminationRevenuedecision.pdf", true},
+				{"DS036", "FY2026/27 implemented tariff adjustments", "Eskom Holdings SOC Ltd", "A2", #date(2026, 3, 16), "FACT_REPORTED", "Verified against direct Eskom implementation notice", "https://www.eskom.co.za/eskom-implements-nersa-decision-for-financial-year-2027/", true},
+				{"DS037", "FY2027/28 retail tariff structural adjustment consultation", "Eyewitness News", "B", #date(2026, 9, 4), "FACT_REPORTED", "Current consultation status verified from dated reporting; official consultation document not located in this release", "https://www.ewn.co.za/2026/09/04/public-invited-to-comment-on-eskom-s-883-tariff-proposal", false}
+				}
+			)
+			```
+
+	annotation PBI_ResultType = Table

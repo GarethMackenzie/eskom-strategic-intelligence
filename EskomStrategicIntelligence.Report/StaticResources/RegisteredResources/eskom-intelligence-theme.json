@@ -1,0 +1,102 @@
+{
+  "name": "Eskom Strategic Intelligence",
+  "dataColors": [
+    "#24C7B1",
+    "#4D9DE0",
+    "#F4B942",
+    "#F06449",
+    "#7FB069",
+    "#8E7DBE"
+  ],
+  "background": "#071522",
+  "foreground": "#EAF4F8",
+  "tableAccent": "#24C7B1",
+  "good": "#24C7B1",
+  "neutral": "#F4B942",
+  "bad": "#F06449",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 15,
+      "color": "#EAF4F8"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 11,
+      "color": "#EAF4F8"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#91A9B8"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 24,
+      "color": "#EAF4F8"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#10283A"
+              }
+            },
+            "transparency": 2
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#244A5F"
+              }
+            },
+            "radius": 8
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontFace": "Segoe UI Semibold",
+            "fontSize": 11,
+            "fontColor": {
+              "solid": {
+                "color": "#EAF4F8"
+              }
+            }
+          }
+        ],
+        "visualHeader": [
+          {
+            "show": true,
+            "foreground": {
+              "solid": {
+                "color": "#91A9B8"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#071522"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}

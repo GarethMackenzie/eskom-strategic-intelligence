@@ -1,0 +1,47 @@
+table DimPeriod
+	column PeriodKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+		sourceColumn: PeriodKey
+
+	column FiscalYear
+		dataType: string
+		sourceColumn: FiscalYear
+
+	column EffectiveDate
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		sourceColumn: EffectiveDate
+
+	column PeriodLabel
+		dataType: string
+		sourceColumn: PeriodLabel
+
+	column SortOrder
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: SortOrder
+
+	partition DimPeriod = m
+		mode: import
+		source = ```
+			#table(
+				type table [PeriodKey = Int64.Type, FiscalYear = text, EffectiveDate = date, PeriodLabel = text, SortOrder = Int64.Type],
+				{
+				{20240331, "FY2024", #date(2024, 3, 31), "FY2024 year-end", 1},
+				{20250331, "FY2025", #date(2025, 3, 31), "FY2025 year-end", 2},
+				{20250401, "FY2025/26", #date(2025, 4, 1), "FY2025/26 tariff", 3},
+				{20260331, "FY2026", #date(2026, 3, 31), "FY2026 year-end", 4},
+				{20260401, "FY2026/27", #date(2026, 4, 1), "FY2026/27 direct tariff", 5},
+				{20260630, "FY2026", #date(2026, 6, 30), "June 2026 in-year", 6},
+				{20260701, "FY2026/27", #date(2026, 7, 1), "FY2026/27 municipal tariff", 7},
+				{20270401, "FY2027/28", #date(2027, 4, 1), "FY2027/28 intended tariff", 8},
+				{20310331, "FY2031", #date(2031, 3, 31), "FY2031 scenario", 9}
+				}
+			)
+			```
+
+	annotation PBI_ResultType = Table

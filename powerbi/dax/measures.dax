@@ -330,3 +330,42 @@ RETURN
 // Combined label for report footers.
 Data Freshness Label =
 [Data Reported As Of] & " · " & [Data Last Refreshed] & " · see docs/data_source_register.csv"
+
+// ---- Tariff path and regulatory status -----------------------------------
+
+FY2026-27 Direct Increase =
+DIVIDE (
+    CALCULATE (
+        MAX ( fact_tariff_adjustment[increase_pct] ),
+        fact_tariff_adjustment[fiscal_year_label] = "FY2026/27",
+        fact_tariff_adjustment[customer_group] = "Direct customers - average"
+    ),
+    100
+)
+
+FY2026-27 Municipal Increase =
+DIVIDE (
+    CALCULATE (
+        MAX ( fact_tariff_adjustment[increase_pct] ),
+        fact_tariff_adjustment[fiscal_year_label] = "FY2026/27",
+        fact_tariff_adjustment[customer_group] = "Municipal bulk purchases"
+    ),
+    100
+)
+
+FY2027-28 Average Increase =
+DIVIDE (
+    CALCULATE (
+        MAX ( fact_tariff_adjustment[increase_pct] ),
+        fact_tariff_adjustment[fiscal_year_label] = "FY2027/28",
+        fact_tariff_adjustment[customer_group] = "Average price path"
+    ),
+    100
+)
+// The 8.83% value is an average revenue/price path. The customer-category
+// structure was under NERSA consultation at 4 September 2026; it must not be
+// labelled as every customer's final tariff.
+
+Illustrative Tariff Index =
+100 * ( 1 + 0.1274 ) * ( 1 + 0.0876 ) * ( 1 + 0.0883 )
+// Baseline-100 arithmetic illustration only, not a customer bill forecast.

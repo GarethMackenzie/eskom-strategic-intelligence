@@ -1,0 +1,44 @@
+table FactScenario
+	column PeriodKey
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: PeriodKey
+
+	column ScenarioName
+		dataType: string
+		sourceColumn: ScenarioName
+
+	column Metric
+		dataType: string
+		sourceColumn: Metric
+
+	column Value
+		dataType: double
+		summarizeBy: none
+		sourceColumn: Value
+
+	column Unit
+		dataType: string
+		sourceColumn: Unit
+
+	column EvidenceType
+		dataType: string
+		sourceColumn: EvidenceType
+
+	column SourceDatasetId
+		dataType: string
+		sourceColumn: SourceDatasetId
+
+	partition FactScenario = m
+		mode: import
+		source = ```
+			#table(
+				type table [PeriodKey = Int64.Type, ScenarioName = text, Metric = text, Value = number, Unit = text, EvidenceType = text, SourceDatasetId = text],
+				{
+				{20310331, "No further intervention", "Municipal Arrears", 358000000000, "Rand", "SCENARIO_MANAGEMENT", "DS003"}
+				}
+			)
+			```
+
+	annotation PBI_ResultType = Table

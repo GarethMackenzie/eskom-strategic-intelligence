@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "51ab9056af445f48b5e7",
+  "position": {
+    "x": 640,
+    "y": 412,
+    "z": 13,
+    "height": 165,
+    "width": 600,
+    "tabOrder": 13
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTariff"
+                    }
+                  },
+                  "Property": "FiscalYear"
+                }
+              },
+              "queryRef": "FactTariff.FiscalYear",
+              "nativeQueryRef": "FiscalYear"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Tariff Increase %"
+                }
+              },
+              "queryRef": "MeasureCatalog.Tariff Increase %",
+              "nativeQueryRef": "Tariff Increase %"
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTariff"
+                    }
+                  },
+                  "Property": "CustomerGroup"
+                }
+              },
+              "queryRef": "FactTariff.CustomerGroup",
+              "nativeQueryRef": "CustomerGroup"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Tariff path by customer group'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

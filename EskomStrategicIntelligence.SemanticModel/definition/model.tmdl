@@ -1,0 +1,17 @@
+model Model
+	culture: en-ZA
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-ZA
+
+	dataAccessOptions
+		fastCombine
+		legacyRedirects
+		returnErrorValuesAsNull
+
+ref table DimPeriod
+ref table FactMetric
+ref table FactTariff
+ref table FactScenario
+ref table SourceRegister
+ref table MeasureCatalog

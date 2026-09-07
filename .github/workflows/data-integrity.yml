@@ -37,3 +37,7 @@ jobs:
         run: |
           test -s data/processed/eskom_intelligence.sqlite
           grep -q '"status": "PASS"' data/processed/qa_summary.json
+          test -s EskomStrategicIntelligence.pbip
+          test -s EskomStrategicIntelligence.Report/definition.pbir
+          test -s EskomStrategicIntelligence.SemanticModel/definition.pbism
+          test "$(find EskomStrategicIntelligence.Report/definition/pages -name visual.json | wc -l)" -eq 68

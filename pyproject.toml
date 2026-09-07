@@ -1,7 +1,7 @@
 [project]
 name = "eskom-strategic-intelligence"
-version = "3.0.0"
-description = "Reproducible public-data analytics case study for Eskom strategic intelligence"
+version = "4.0.0"
+description = "Source-controlled Power BI and analytics-engineering case study for Eskom strategic intelligence"
 requires-python = ">=3.11"
 
 [tool.pytest.ini_options]

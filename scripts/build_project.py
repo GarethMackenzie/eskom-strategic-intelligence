@@ -11,9 +11,11 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.analytics.build_database import build_database  # noqa: E402
 from src.config import DATABASE_PATH, QA_SUMMARY_PATH  # noqa: E402
 from src.validation.quality import run_quality_checks, serialise_results  # noqa: E402
+from build_powerbi_project import main as build_powerbi_project  # noqa: E402
 
 
 def main() -> int:
+    power_bi = build_powerbi_project()
     connection, source_count = build_database(DATABASE_PATH)
     try:
         results = run_quality_checks(connection)
@@ -23,6 +25,7 @@ def main() -> int:
     summary = serialise_results(results)
     summary["source_records"] = source_count
     summary["database"] = str(DATABASE_PATH.relative_to(PROJECT_ROOT))
+    summary["power_bi"] = power_bi
     QA_SUMMARY_PATH.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
 
     for result in results:

@@ -85,3 +85,29 @@ dictionary did not specify filter behaviour.
 - **Usage constraint:** Contextual only. It is not modelled as a live operational KPI because no
   dated, metered capacity series is available in this repository. Do not present it as an
   instantaneous surplus measurement.
+
+### FY2026/27 Direct / Municipal Tariff Increases
+- **Type:** FACT_REPORTED
+- **Definition:** Implemented average increases of 8.76% for Eskom direct customers from 1 April
+  2026 and 9.01% for municipal bulk purchases from 1 July 2026.
+- **Source:** DS036 (direct Eskom implementation notice, corroborating the NERSA decision).
+- **Expected filter behaviour:** Customer-group and fiscal-year context resolves the relevant row;
+  the direct-customer measure is explicitly restricted to FY2026/27 so it cannot return the earlier
+  12.74% FY2025/26 observation.
+
+### FY2027/28 Average Increase
+- **Type:** FACT_REPORTED with regulatory-status qualification
+- **Definition:** 8.83% estimated final average price impact/revenue path for FY2027/28, intended
+  from 1 April 2027. The detailed retail tariff structure and customer-category allocation were
+  under NERSA consultation as at 4 September 2026.
+- **Sources:** DS035 supports the value; DS037 records current consultation status.
+- **Usage constraint:** Do not label it a fully final tariff for every customer category. It also
+  remains subject to the RCA qualification in NERSA's settlement statement.
+- **Expected filter behaviour:** Returns only the `Average price path` tariff row.
+
+### Illustrative Tariff Index
+- **Type:** CALCULATION_DERIVED
+- **Formula:** `100 × 1.1274 × 1.0876 × 1.0883`.
+- **Definition:** A baseline-100 mathematical index showing compounding of the published average
+  paths. It is not a customer bill forecast because tariffs, consumption, taxes, fixed charges and
+  customer categories differ.

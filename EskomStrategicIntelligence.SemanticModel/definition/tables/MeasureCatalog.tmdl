@@ -1,0 +1,162 @@
+table MeasureCatalog
+	column Value
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Value
+
+	/// Base aggregation used only with a governed metric filter.
+	measure 'Metric Value' = SUM ( FactMetric[Value] )
+		formatString: #,0.00
+		displayFolder: Core
+
+	/// Reported fiscal-year-end municipal arrears; non-additive across periods.
+	measure 'Year-End Municipal Arrears' = CALCULATE ( SUM ( FactMetric[Value] ), FactMetric[Metric] = "Municipal Arrears - Year End" )
+		formatString: R0.0,,,bn
+		displayFolder: Municipal Debt
+
+	/// Latest governed fiscal-year-end balance: R111.6bn; intentionally unaffected by period slicers.
+	measure 'Latest Year-End Municipal Arrears' = CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ), FactMetric[Metric] = "Municipal Arrears - Year End", FactMetric[PeriodKey] = 20260331 )
+		formatString: R0.0,,,bn
+		displayFolder: Municipal Debt
+
+	/// Latest in-year observation: R119.9bn at June 2026; kept separate from year-end.
+	measure 'Latest In-Year Municipal Arrears' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Municipal Arrears - In Year" )
+		formatString: R0.0,,,bn
+		displayFolder: Municipal Debt
+
+	/// FY2026 year-end change against the governed FY2025 comparator.
+	measure 'Municipal Arrears YoY %' = DIVIDE ( [Latest Year-End Municipal Arrears] - 94600000000, 94600000000 )
+		formatString: 0.0%
+		displayFolder: Municipal Debt
+
+	/// Eskom management no-intervention scenario; not a reported actual.
+	measure 'Scenario Municipal Arrears FY2031' = MAX ( FactScenario[Value] )
+		formatString: R0.0,,,bn
+		displayFolder: Scenario
+
+	/// Scenario difference, not a forecast produced by this project.
+	measure 'Scenario Gap vs Latest' = [Scenario Municipal Arrears FY2031] - [Latest Year-End Municipal Arrears]
+		formatString: R0.0,,,bn
+		displayFolder: Scenario
+
+	/// Reported annual electricity sales.
+	measure 'Electricity Sales' = CALCULATE ( SUM ( FactMetric[Value] ), FactMetric[Metric] = "Electricity Sales" )
+		formatString: 0.0 TWh
+		displayFolder: Operations
+
+	/// Latest reported annual sales: 178 TWh; intentionally unaffected by period slicers.
+	measure 'Latest Electricity Sales' = CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ), FactMetric[Metric] = "Electricity Sales", FactMetric[PeriodKey] = 20260331 )
+		formatString: 0.0 TWh
+		displayFolder: Operations
+
+	/// FY2026 sales change versus FY2025.
+	measure 'Sales YoY %' = DIVIDE ( [Latest Electricity Sales] - 189.7, 189.7 )
+		formatString: 0.0%
+		displayFolder: Operations
+
+	/// Reported Energy Availability Factor by fiscal year.
+	measure 'Energy Availability Factor' = DIVIDE ( CALCULATE ( SUM ( FactMetric[Value] ), FactMetric[Metric] = "Energy Availability Factor" ), 100 )
+		formatString: 0.00%
+		displayFolder: Operations
+
+	/// Latest reported EAF: 65.16%; intentionally unaffected by period slicers.
+	measure 'Latest EAF' = DIVIDE ( CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ), FactMetric[Metric] = "Energy Availability Factor", FactMetric[PeriodKey] = 20260331 ), 100 )
+		formatString: 0.00%
+		displayFolder: Operations
+
+	/// Percentage-point change versus FY2025.
+	measure 'EAF Change pp' = 100 * [Latest EAF] - 60.6
+		formatString: 0.00 pp
+		displayFolder: Operations
+
+	/// Reported FY2026 net profit after tax.
+	measure 'Net Profit After Tax' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Net Profit After Tax" )
+		formatString: R0.0,,,bn
+		displayFolder: Financial
+
+	/// FY2026 electricity revenue; secondary, corroborated evidence.
+	measure 'Electricity Revenue' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Electricity Revenue" )
+		formatString: R0.0,,,bn
+		displayFolder: Financial
+
+	/// Aggregate physical-security losses, not coal-specific.
+	measure 'Security Losses' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Security Losses" )
+		formatString: R0.0,,m
+		displayFolder: Security
+
+	/// Aggregate physical-security recoveries, not coal-specific.
+	measure 'Security Recoveries' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Security Recoveries" )
+		formatString: R0.0,,m
+		displayFolder: Security
+
+	/// Recoveries divided by estimated losses; descriptive, not causal.
+	measure 'Security Recovery Rate' = DIVIDE ( [Security Recoveries], [Security Losses] )
+		formatString: 0.0%
+		displayFolder: Security
+
+	/// Aggregate arrests in the physical-security disclosure.
+	measure Arrests = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Arrests" )
+		formatString: #,0
+		displayFolder: Security
+
+	/// Aggregate convictions in the physical-security disclosure.
+	measure Convictions = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Convictions" )
+		formatString: #,0
+		displayFolder: Security
+
+	/// Security-only value used with the metric category; units remain visible in the evidence table.
+	measure 'Security Metric Value' = CALCULATE ( SUM ( FactMetric[Value] ), FactMetric[Domain] = "Security" )
+		formatString: #,0.00
+		displayFolder: Security
+
+	/// Average increase for the tariff row in filter context.
+	measure 'Tariff Increase %' = DIVIDE ( MAX ( FactTariff[IncreasePct] ), 100 )
+		formatString: 0.00%
+		displayFolder: Tariff
+
+	/// Implemented average direct-customer increase from 1 April 2026.
+	measure 'FY2026/27 Direct Increase' = DIVIDE ( CALCULATE ( MAX ( FactTariff[IncreasePct] ), FactTariff[CustomerGroup] = "Direct customers - average", FactTariff[FiscalYear] = "FY2026/27" ), 100 )
+		formatString: 0.00%
+		displayFolder: Tariff
+
+	/// Implemented average municipal bulk increase from 1 July 2026.
+	measure 'FY2026/27 Municipal Increase' = DIVIDE ( CALCULATE ( MAX ( FactTariff[IncreasePct] ), FactTariff[CustomerGroup] = "Municipal bulk purchases" ), 100 )
+		formatString: 0.00%
+		displayFolder: Tariff
+
+	/// FY2027/28 average path; detailed retail structure remained under consultation at 4 September 2026.
+	measure 'FY2027/28 Average Increase' = DIVIDE ( CALCULATE ( MAX ( FactTariff[IncreasePct] ), FactTariff[CustomerGroup] = "Average price path" ), 100 )
+		formatString: 0.00%
+		displayFolder: Tariff
+
+	/// Mathematical index from the three average paths, baseline 100; not a customer bill forecast.
+	measure 'Illustrative Tariff Index' = 100 * ( 1 + 0.1274 ) * ( 1 + 0.0876 ) * ( 1 + 0.0883 )
+		formatString: 0.0
+		displayFolder: Tariff
+
+	/// Regulatory status label, not a claim of final customer-category tariffs.
+	measure 'Tariff Consultation Status' = "8.83% average path | retail structure under consultation at 04 Sep 2026"
+		formatString: General
+		displayFolder: Tariff
+
+	/// Number of governed source-register records embedded in the model.
+	measure 'Governed Source Count' = COUNTROWS ( SourceRegister )
+		formatString: #,0
+		displayFolder: Governance
+
+	/// Direct official or primary-document source records (tier A1/A2).
+	measure 'Primary Source Count' = CALCULATE ( COUNTROWS ( SourceRegister ), SourceRegister[IsPrimary] = TRUE () )
+		formatString: #,0
+		displayFolder: Governance
+
+	/// Latest reported evidence date excluding scenario horizons.
+	measure 'Latest Evidence Date' = FORMAT ( MAX ( SourceRegister[PublicationDate] ), "dd mmm yyyy" )
+		formatString: General
+		displayFolder: Governance
+
+	partition MeasureCatalog = m
+		mode: import
+		source = #table(type table [Value = Int64.Type], {{1}})
+
+	annotation PBI_ResultType = Table

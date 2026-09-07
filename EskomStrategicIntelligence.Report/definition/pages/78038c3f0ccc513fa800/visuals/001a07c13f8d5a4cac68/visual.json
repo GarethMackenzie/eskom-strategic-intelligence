@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "001a07c13f8d5a4cac68",
+  "position": {
+    "x": 1045,
+    "y": 94,
+    "z": 9,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 9
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Security Recovery Rate"
+                }
+              },
+              "queryRef": "MeasureCatalog.Security Recovery Rate",
+              "nativeQueryRef": "Security Recovery Rate"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Security Recovery Rate'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

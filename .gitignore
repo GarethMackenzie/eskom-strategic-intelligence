@@ -9,6 +9,10 @@ venv/
 .env.*
 !.env.example
 *.pbix.bak
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+**/.pbi/*.lock
+**/.pbi/desktop.json
 .DS_Store
 data/raw/*.tmp
 data/processed/*

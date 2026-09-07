@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "4464a5be42bc52f6a1c1",
+  "position": {
+    "x": 20,
+    "y": 676,
+    "z": 14,
+    "height": 26,
+    "width": 1240,
+    "tabOrder": 14
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "SECURITY FIGURES ARE AGGREGATE PHYSICAL-SECURITY METRICS  •  THEY ARE NOT COAL-SPECIFIC  •  ASSOCIATION IS NOT CAUSATION"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "b17ce8e72c5153a9b3b0",
+  "position": {
+    "x": 840,
+    "y": 94,
+    "z": 8,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 8
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "FY2027/28 Average Increase"
+                }
+              },
+              "queryRef": "MeasureCatalog.FY2027/28 Average Increase",
+              "nativeQueryRef": "FY2027/28 Average Increase"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'FY2027/28 Average Increase'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

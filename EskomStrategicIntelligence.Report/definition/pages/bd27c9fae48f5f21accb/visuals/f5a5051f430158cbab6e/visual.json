@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "f5a5051f430158cbab6e",
+  "position": {
+    "x": 635,
+    "y": 94,
+    "z": 7,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 7
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Illustrative Tariff Index"
+                }
+              },
+              "queryRef": "MeasureCatalog.Illustrative Tariff Index",
+              "nativeQueryRef": "Illustrative Tariff Index"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Illustrative Tariff Index'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

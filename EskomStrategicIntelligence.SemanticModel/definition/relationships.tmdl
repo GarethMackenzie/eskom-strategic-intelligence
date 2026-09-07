@@ -1,0 +1,11 @@
+relationship 210e95ecbd0957938793
+	fromColumn: FactMetric.PeriodKey
+	toColumn: DimPeriod.PeriodKey
+
+relationship c790720fbc9e523e8d88
+	fromColumn: FactTariff.PeriodKey
+	toColumn: DimPeriod.PeriodKey
+
+relationship 88c22400cded5bef8ea8
+	fromColumn: FactScenario.PeriodKey
+	toColumn: DimPeriod.PeriodKey

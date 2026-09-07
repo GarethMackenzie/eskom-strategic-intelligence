@@ -1,0 +1,129 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "46732edf692e5654bc07",
+  "position": {
+    "x": 20,
+    "y": 445,
+    "z": 12,
+    "height": 210,
+    "width": 1240,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTariff"
+                    }
+                  },
+                  "Property": "FiscalYear"
+                }
+              },
+              "queryRef": "FactTariff.FiscalYear",
+              "nativeQueryRef": "FiscalYear"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTariff"
+                    }
+                  },
+                  "Property": "CustomerGroup"
+                }
+              },
+              "queryRef": "FactTariff.CustomerGroup",
+              "nativeQueryRef": "CustomerGroup"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTariff"
+                    }
+                  },
+                  "Property": "IncreasePct"
+                }
+              },
+              "queryRef": "FactTariff.IncreasePct",
+              "nativeQueryRef": "IncreasePct"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTariff"
+                    }
+                  },
+                  "Property": "EffectiveDate"
+                }
+              },
+              "queryRef": "FactTariff.EffectiveDate",
+              "nativeQueryRef": "EffectiveDate"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTariff"
+                    }
+                  },
+                  "Property": "RegulatoryStatus"
+                }
+              },
+              "queryRef": "FactTariff.RegulatoryStatus",
+              "nativeQueryRef": "RegulatoryStatus"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTariff"
+                    }
+                  },
+                  "Property": "SourceDatasetId"
+                }
+              },
+              "queryRef": "FactTariff.SourceDatasetId",
+              "nativeQueryRef": "SourceDatasetId"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Regulatory status and lineage'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

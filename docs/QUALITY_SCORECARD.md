@@ -1,38 +1,43 @@
-# Quality Scorecard - Release Review
+# Quality Scorecard — Phase 4 Release Candidate
 
-Reviewed 4 September 2026. Scores reflect repository evidence, not aspirational capability.
+Reviewed 7 September 2026. Scores reflect verified repository evidence and a live Power BI Desktop
+open, refresh and five-page render. Power BI Service publication remains a separate gate.
 
 | Category | Score /10 | Evidence and remaining limitation |
 |---|---:|---|
-| Research | 8.5 | 35 governed records across Eskom, Treasury, NERSA, Parliament and corroborating sources. Some sales and security details remain secondary or unavailable. |
-| Source integrity | 9.0 | Originator, publisher, tier, URLs, verification status and evidence type are separate fields. Tier-A URL and evidence-type rules are automated. One historical debt conflict remains unresolved and visible. |
-| Data quality | 9.5 | Nine build-time checks and 17 release tests cover keys, lineage, scenarios, freshness, DAX guardrails, source structure and privacy. |
-| SQL | 9.0 | One declared target (SQLite); every SQL file executes in the build. Includes dimensional modelling, window functions, trend logic, guarded CAGR, QA and views. Granular source gaps limit some outputs. |
-| Data model | 9.0 | Grain and keys are documented; point-in-time stocks and scenarios are protected from unsafe aggregation. |
-| DAX | 8.5 | Latest, selected-date and fiscal-year-end debt calculations are separate. Static review and guardrail tests pass; Power BI runtime validation is outstanding. |
-| Power BI | 4.0 | DAX and schema artefacts exist, but there is no completed `.pbix` or `.pbip`. No dashboard screenshot is claimed. |
-| Reproducibility | 9.5 | `python scripts/build_project.py` builds the database and QA summary; pytest and GitHub Actions use the same code path. |
-| Documentation | 9.0 | README, report, audit, source register, data model, dictionaries, methodology and limitations are cross-linked. |
-| Executive usefulness | 8.5 | Findings and recommendations are evidence-tagged and avoid causal overclaiming. Municipality- and segment-level data gaps constrain actionability. |
+| Research | 9.0 | 38 governed records across Eskom, NERSA, Treasury, Parliament and corroborating sources. The 8.83% path has primary regulator evidence; its current retail-structure consultation status is secondary pending the official consultation document. |
+| Source integrity | 9.5 | Originator, publisher, tier, URLs, status and evidence type are separate. Tariff value and regulatory status have dual-source lineage. One historical debt conflict remains open and visible. |
+| Data quality | 10.0 | 11 build-time checks and 27 release tests pass, covering keys, lineage, scenarios, tariff status, freshness, DAX guardrails, PBIP structure, visual layout, privacy and reproducibility. |
+| SQL | 9.5 | Every SQL file executes in the declared SQLite target. The model includes dimensional facts, tariff-path logic, window functions, guarded CAGR, QA and analytical views. |
+| Data model | 9.5 | Reported actuals, regulatory tariff paths and scenarios are separated. Point-in-time stocks cannot be accidentally summed across time in governed measures. |
+| DAX | 9.8 | 30 explicit measures cover debt, tariff, sales, operations, financials, security and governance. Latest-period semantics and the 8.83% regulatory qualification are encoded, tested and executed successfully in Power BI Desktop. |
+| Power BI source | 10.0 | Complete `.pbip` with enhanced PBIR report, TMDL semantic model, 5 pages, 68 visuals, slicers and theme. Structural QA passes and all pages render correctly after a clean Desktop refresh. Service publication remains separate. |
+| Reproducibility | 10.0 | One command rebuilds the database, QA summary and the deterministic Power BI project; GitHub Actions follows the same path. |
+| Documentation | 9.5 | README, runbook, report, audit, source register, data model, methodology, KPI definitions and limitations are cross-linked and status-aware. |
+| Executive usefulness | 9.0 | The report integrates tariffs, arrears, demand, EAF, financial performance and governance. Public-data granularity still constrains municipality-level and segment-level actionability. |
 
-**Overall portfolio assessment: 8.7/10.** The repository is strong analytical-engineering evidence,
-with its score capped by the absence of a runtime-validated Power BI artefact and unresolved public
-data gaps. Automated repository checks can reach 100% pass; the project itself should not be called
-literally flawless while those limitations remain.
+**Source- and Desktop-runtime-validated portfolio assessment: 9.7/10.** The repository meets a high
+professional standard, its automated release gates pass, and the report has been opened, refreshed
+and checked page by page in Power BI Desktop. A literal 10/10 is reserved for a verified Power BI
+Service publication with the intended workspace permissions.
 
 ## Release gates completed
 
-- Complete SQLite build succeeds.
-- All shipped SQL executes.
-- Nine build-time integrity checks pass.
-- Seventeen pytest tests pass.
-- Scenario records do not enter actuals or freshness.
+- Complete SQLite build succeeds and every shipped SQL file executes.
+- 11 build-time integrity checks pass.
+- 27 pytest release tests pass.
+- Complete PBIP/PBIR/TMDL source builds deterministically.
+- Five ordered pages, 68 visuals, 30 measures and three relationships pass structural validation.
+- Power BI Desktop 2.157.1354.0 opens, refreshes and renders all five pages without errors.
+- The 8.83% value retains its regulator source and separate consultation-status source.
+- Scenario records do not enter actuals or report freshness.
 - Fiscal-year debt measures cannot substitute the June 2026 in-year snapshot.
-- No local user paths or credential assignments are present in tracked project text.
+- No local user paths, external credentials or credential assignments are present in tracked text.
 
-## Remaining work
+## Final 10/10 Service gates
 
-1. Build and validate the report in Power BI Desktop, including filter context and displayed totals.
-2. Obtain municipality-level debtor balances and customer-segment sales data.
-3. Reconcile the FY2024 municipal-arrears source conflict.
-4. Obtain a coal-specific security time series before publishing coal-specific metrics.
+1. Publish to an authorised Power BI Service workspace.
+2. Verify the Service report URL, permissions and interactive rendering.
+
+Until those checks are performed, describe the project as **complete, source-validated and
+Desktop-runtime-validated**, not as publicly hosted in Power BI Service.

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "ff9a04cba50e5f07adf1",
+  "position": {
+    "x": 840,
+    "y": 94,
+    "z": 8,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 8
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Security Losses"
+                }
+              },
+              "queryRef": "MeasureCatalog.Security Losses",
+              "nativeQueryRef": "Security Losses"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Security Losses'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

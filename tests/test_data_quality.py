@@ -144,7 +144,7 @@ def test_source_freshness_uses_latest_actual_disclosure():
     actual = conn.execute(
         "SELECT data_reported_as_of FROM vw_report_freshness"
     ).fetchone()[0]
-    assert actual == "2026-08-31", f"Expected 2026-08-31, got {actual}"
+    assert actual == "2026-09-04", f"Expected 2026-09-04, got {actual}"
     leaked = conn.execute("""
         SELECT r.dataset_id
         FROM fact_source_refresh r
@@ -152,7 +152,7 @@ def test_source_freshness_uses_latest_actual_disclosure():
         WHERE s.evidence_type LIKE 'SCENARIO%'
     """).fetchall()
     assert leaked == [], f"Scenario sources leaked into freshness: {leaked}"
-    print("PASS: freshness resolves to 2026-08-31 and excludes scenarios")
+    print("PASS: freshness resolves to 2026-09-04 and excludes scenarios")
 
 
 def test_all_sql_files_execute_in_release_build():
@@ -165,6 +165,8 @@ def test_all_sql_files_execute_in_release_build():
         "vw_report_freshness",
         "vw_executive_kpis_actual",
         "vw_executive_kpis_scenario",
+        "fact_tariff_adjustment",
+        "vw_tariff_path",
     }
     actual_objects = {
         row[0]
@@ -320,6 +322,23 @@ def test_metric_yoy_not_summed_as_level():
     print("PASS: no percent-unit security metric has more than one period (SUM-safety check)")
 
 
+def test_tariff_path_preserves_regulatory_status():
+    conn = build_db()
+    row = conn.execute("""
+        SELECT increase_pct, regulatory_status, intended_effective_date,
+               source_dataset_id, status_source_dataset_id
+        FROM fact_tariff_adjustment
+        WHERE fiscal_year_label='FY2027/28' AND customer_group='Average price path'
+    """).fetchone()
+    assert row is not None
+    assert row[0] == 8.83
+    assert row[2] == "2027-04-01"
+    assert row[3:] == ("DS035", "DS037")
+    assert "consultation" in row[1].lower()
+    assert "final customer-category allocation" not in row[1].lower()
+    print("PASS: 8.83% path is present with consultation status and dual-source lineage")
+
+
 ALL_TESTS = [
     test_no_duplicate_fact_primary_keys,
     test_no_orphan_dimension_keys,
@@ -338,6 +357,7 @@ ALL_TESTS = [
     test_no_security_case_has_invalid_legal_status,
     test_no_case_source_shared_across_unrelated_cases,
     test_metric_yoy_not_summed_as_level,
+    test_tariff_path_preserves_regulatory_status,
 ]
 
 if __name__ == "__main__":

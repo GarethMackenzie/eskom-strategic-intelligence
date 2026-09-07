@@ -98,3 +98,19 @@ strings like "Mixed (Arrest+Conviction...)" are prohibited by design.
 Grain: one row per dataset_id. Drives "Data reported as of" / "Data last refreshed" labels.
 Structurally excludes SCENARIO_* evidence-type datasets at load time (see
 `sql/13_source_freshness.sql`) so scenario dates can never surface as a freshness label.
+
+## fact_tariff_adjustment
+Grain: one row per (effective_date_key, customer_group). Holds implemented average tariffs and a
+separately qualified forward average price path.
+
+| Column | Type | Notes |
+|---|---|---|
+| effective_date_key | INTEGER FK | Intended or implemented effective date in `dim_date` |
+| fiscal_year_label | VARCHAR(10) | Regulatory financial-year label |
+| customer_group | VARCHAR(60) | Direct, municipal bulk or average price path |
+| increase_pct | NUMERIC(6,2) | Published average percentage increase; not a bill forecast |
+| intended_effective_date | DATE | Effective/intended date for the observation |
+| regulatory_status | VARCHAR(240) | Preserves implementation/consultation status |
+| evidence_type | VARCHAR(30) | `FACT_REPORTED` for the published regulatory observation |
+| source_dataset_id | VARCHAR(10) | Lineage for the numeric value |
+| status_source_dataset_id | VARCHAR(10) | Separate lineage for current regulatory status |

@@ -1,6 +1,6 @@
 # Eskom Strategic Intelligence
 ### Municipal Debt • Electricity Demand • Coal Supply-Chain Risk
-**Data reported as of: 31 August 2026 · Pipeline last reviewed: 4 September 2026 · Status: release-reviewed portfolio case study**
+**Data reported as of: 4 September 2026 · Pipeline last reviewed: 4 September 2026 · Status: source-validated Power BI release candidate**
 
 ---
 
@@ -12,7 +12,9 @@ reported at R119.9 billion by June 2026. [FACT] Electricity sales volume decline
 over the same period, while plant availability (EAF) improved from 60.6% to 65.16%. [FACT] Eskom's
 aggregate physical-security crime disclosure (which spans cable, coal, fuel, and several other
 categories together, not coal specifically) showed incidents down 13% and estimated losses down
-18% to R191 million.
+18% to R191 million. [FACT, QUALIFIED] NERSA's revenue path indicates an 8.83% average increase for
+FY2027/28, while the detailed retail tariff structure and customer-category allocation remained
+under consultation at 4 September 2026.
 
 This report documents what the available evidence supports on each of these three questions,
 what it does not yet support, and where two independently sourced figures for the same period
@@ -120,6 +122,20 @@ others, not a proven single explanation.
 agreement with Manganese Metal Company. These are Eskom's own commercial responses; this project's
 contribution is describing their observable characteristics (targeted, price-sensitive, large
 industrial loads), not originating the strategy.
+
+### 5.1 Tariff path and the 8.83% regulatory update
+
+**[FACT]** The implemented FY2026/27 averages are 8.76% for Eskom direct customers from 1 April
+2026 and 9.01% for municipal bulk purchases from 1 July 2026. **[FACT, QUALIFIED]** NERSA's MYPD6
+settlement/re-determination path indicates an 8.83% estimated average price increase for FY2027/28,
+intended from 1 April 2027 and subject to the Regulatory Clearing Account qualification recorded
+in the regulator's statement. As at 4 September 2026, the detailed retail tariff structural
+adjustment and allocation across customer categories was under consultation.
+
+The dashboard therefore separates three concepts: approved/implemented FY2026/27 averages, the
+FY2027/28 average revenue path, and the pending customer-category structure. It does not present
+8.83% as every customer's final bill increase. The baseline-100 cumulative index is an arithmetic
+illustration of the published average paths only; it is not a bill forecast.
 
 ## 6. Coal Supply-Chain Risk Analysis
 
@@ -231,8 +247,8 @@ or Eskom's Integrated Report debtor schedule for full Data Gap #1 closure; (3) r
 Integrated Report's sales-by-category table for Data Gap #2; (4) search SAPS/Hawks, SIU, and
 Portfolio Committee briefings on PMG (which proved productive for municipal-debt material in this
 pass) for coal-specific security data; (5) retrieve Eskom's FY2021–FY2023 annual reports for the
-remaining history needed for a defensible CAGR; (6) assemble the Power BI `.pbip`/`.pbix` from the
-DAX/model artefacts already produced.
+remaining history needed for a defensible CAGR; (6) complete the Power BI Desktop runtime check and
+publish to an authorised Power BI Service workspace if an interactive browser report is required.
 
 ## 10. KPI Framework
 See `docs/kpi_dictionary.md`.

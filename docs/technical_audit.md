@@ -132,12 +132,22 @@ The release review found two additional executable defects and corrected them:
   and absolute-change calculations.
 
 The repository now has one declared SQLite target, a standard-library Python loader, a one-command
-build, nine build-time checks, 17 pytest tests and a GitHub Actions workflow that compiles Python,
-builds the database, executes every SQL file, runs tests and verifies generated outputs.
+build, 11 build-time checks, 27 pytest tests and a GitHub Actions workflow that compiles Python,
+builds the database and source-controlled Power BI Project, executes every SQL file, runs tests and
+verifies generated outputs. Phase 4 adds a 5-page enhanced PBIR report, TMDL semantic model, 30
+explicit DAX measures, 68 visuals and the qualified FY2027/28 8.83% tariff path.
+
+Power BI Desktop 2.157.1354.0 (August 2026) was used on 7 September 2026 for a live runtime audit.
+The audit surfaced two source-generator defects that structural JSON checks could not detect:
+invalid inline Power Query field-type tokens and the reserved semantic-model table name
+`Measures`. Both were corrected in the generator, covered by regression checks and retested. The
+six tables refreshed, all three relationships applied, and every visual on all five pages rendered
+without an engine or visual error.
 
 ## What this audit still does not cover
 
-- Power BI Desktop runtime validation or a completed `.pbix`/`.pbip`.
+- Power BI Service publication and permission validation. The `.pbip` is structurally and Desktop-
+  runtime validated; no `.pbix` binary or live Service link is claimed.
 - Closure of the public-data gaps and the FY2024 arrears reconciliation item documented in
   `docs/limitations.md`.
 - Any claim that unavailable granular security data is coal-specific.

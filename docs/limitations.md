@@ -1,5 +1,15 @@
 # Data Gaps and Limitations (Release Review)
 
+## Regulatory status — FY2027/28 8.83% tariff path
+
+NERSA's settlement statement supports an 8.83% estimated final average price impact for FY2027/28
+and notes that the figures remain subject to the Regulatory Clearing Account process. Reporting on
+4 September 2026 states that the detailed retail tariff structural adjustment and allocation across
+customer categories was still open for consultation. The project therefore shows 8.83% as the
+average revenue/price path, not as a final tariff for every household, municipality or business.
+The current consultation-status source is tier B until the underlying NERSA consultation document
+is retrieved. Any Power BI Service publication should refresh this status before use.
+
 ## Reconciliation Item #1 — Conflicting municipal arrears figures for FY2024/FY2025 [NEW]
 Two credible sources give different figures for the same reporting dates:
 - **National Treasury (MTBPS-sourced, DS031, tier B):** R55.3bn (Mar 2024) → R94.6bn (Mar 2025)
@@ -72,3 +82,8 @@ Every figure carries a `retrieval_datetime`; any dashboard or report generated f
 must display "Data reported as of [date]" (via `fact_source_refresh` / the `Data Reported As Of`
 DAX measure — see `docs/technical_audit.md` P0-4) and should be re-validated once Eskom's FY2026
 Integrated Report and Annual Financial Statements are formally published.
+
+GitHub stores and validates the editable PBIP/PBIR/TMDL source, but does not render Power BI
+interactivity. A browser-interactive version requires an authorised Power BI Service publication.
+Desktop open/refresh/interaction and Service permissions remain separate manual runtime gates; see
+`docs/POWER_BI_RUNBOOK.md`.

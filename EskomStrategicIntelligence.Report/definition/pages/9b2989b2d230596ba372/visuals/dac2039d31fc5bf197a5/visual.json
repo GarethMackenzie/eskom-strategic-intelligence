@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "dac2039d31fc5bf197a5",
+  "position": {
+    "x": 20,
+    "y": 94,
+    "z": 4,
+    "height": 118,
+    "width": 190,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MeasureCatalog"
+                    }
+                  },
+                  "Property": "Latest Year-End Municipal Arrears"
+                }
+              },
+              "queryRef": "MeasureCatalog.Latest Year-End Municipal Arrears",
+              "nativeQueryRef": "Latest Year-End Municipal Arrears"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Latest Year-End Municipal Arrears'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
