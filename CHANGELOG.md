@@ -1,5 +1,10 @@
 # Changelog
 
+## [SVG preview repair] - 2026-09-07
+
+- Escaped the ampersand in the generated dashboard preview so GitHub can render the SVG.
+- Added XML parsing to the preview regression test.
+
 ## [Phase 4 Power BI release] - 2026-09-07
 
 ### Corrected

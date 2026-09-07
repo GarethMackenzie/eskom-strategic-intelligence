@@ -2,6 +2,7 @@
 
 import json
 import re
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -144,6 +145,7 @@ def test_883_status_and_lineage_are_not_overstated():
 
 def test_preview_is_explicitly_not_a_runtime_screenshot():
     preview = (ROOT / "assets" / "eskom-power-bi-preview.svg").read_text(encoding="utf-8")
+    ET.fromstring(preview)
     assert "Preview only" in preview
     assert "interactive rendering requires Power BI Desktop" in preview
     assert not list(ROOT.glob("*.pbix")), "No generated or fake PBIX binary may be committed"
