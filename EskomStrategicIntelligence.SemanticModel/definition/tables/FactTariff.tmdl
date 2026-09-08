@@ -44,7 +44,7 @@ table FactTariff
 				{20250401, "FY2025/26", "Direct customers - average", 12.74, #date(2025, 4, 1), "Approved and implemented", "DS035", "DS035"},
 				{20260401, "FY2026/27", "Direct customers - average", 8.76, #date(2026, 4, 1), "Approved and implemented", "DS036", "DS036"},
 				{20260701, "FY2026/27", "Municipal bulk purchases", 9.01, #date(2026, 7, 1), "Approved and implemented", "DS036", "DS036"},
-				{20270401, "FY2027/28", "Average price path", 8.83, #date(2027, 4, 1), "Average path established; retail structure and customer-category allocation under NERSA consultation at 2026-09-04", "DS035", "DS037"}
+				{20270401, "FY2027/28", "Average price path", 8.83, #date(2027, 4, 1), "Average revenue/price path established; detailed ERTSA structure and customer-category allocation under NERSA consultation from 2026-09-02", "DS035", "DS037"}
 				}
 			)
 			```

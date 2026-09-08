@@ -38,7 +38,8 @@ metered operational series.
 ## Statistical method selection
 Methods are chosen only where they answer a specific business question and the underlying data
 supports them:
-- **YoY % / CAGR** — trend velocity (CAGR intentionally suppressed below 5 comparable years, see Data Gap #4).
+- **YoY % / CAGR** — trend velocity. Debt YoY uses the latest and immediate prior fiscal-year-end
+  values; debt CAGR uses the earliest and latest of 12 comparable FY2015–FY2026 observations.
 - **Pareto/concentration** — debtor concentration, currently non-executable pending Data Gap #1 (see sql/11_pareto_analysis.sql, which is designed to activate automatically once real data lands).
 - **Correlation (not causal)** — used only where two independently sourced series exist for the same period (e.g. sales volume vs. Energy Availability Factor), and always labelled as association, not causation.
 - **Scenario/sensitivity analysis** — used for the What-If Municipal Debt and Demand scenarios on the Scenario & Decision Lab page, always labelled as such.
@@ -49,4 +50,13 @@ telemetry. Eskom results announcements occur roughly twice yearly (interim + ann
 settlement events and security-incident case reports are published ad hoc. The semantic layer
 therefore carries both `last_refresh_datetime` (when this pipeline last ran) and
 `source_reporting_date` (when the underlying figure was actually as-of), and every dashboard
-surfaces both via the `Data As Of Label` DAX measure.
+surfaces publication-date freshness from the governed `SourceRegister`. Scenarios and superseded
+records are excluded. Build-time QA derives the expected maximum eligible date from the same
+register rather than comparing to a literal release date.
+
+## Canonical data and semantic generation
+
+Business facts are stored once in SQLite facts. After QA passes, `sql/15_semantic_exports.sql`
+provides stable `vw_powerbi_*` views that the PBIP generator embeds into TMDL. DAX measures have one
+catalog in `scripts/build_powerbi_project.py`; both TMDL and `powerbi/dax/measures.dax` are generated
+from it. This prevents SQL/Python/Power BI value drift.

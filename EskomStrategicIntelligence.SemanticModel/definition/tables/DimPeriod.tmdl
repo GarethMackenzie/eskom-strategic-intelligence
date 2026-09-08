@@ -25,21 +25,42 @@ table DimPeriod
 		summarizeBy: none
 		sourceColumn: SortOrder
 
+	column IsFiscalYearEnd
+		dataType: boolean
+		sourceColumn: IsFiscalYearEnd
+
+	column IsScenarioHorizon
+		dataType: boolean
+		isHidden
+		sourceColumn: IsScenarioHorizon
+
 	partition DimPeriod = m
 		mode: import
 		source = ```
 			#table(
-				type table [PeriodKey = Int64.Type, FiscalYear = text, EffectiveDate = date, PeriodLabel = text, SortOrder = Int64.Type],
+				type table [PeriodKey = Int64.Type, FiscalYear = text, EffectiveDate = date, PeriodLabel = text, SortOrder = Int64.Type, IsFiscalYearEnd = logical, IsScenarioHorizon = logical],
 				{
-				{20240331, "FY2024", #date(2024, 3, 31), "FY2024 year-end", 1},
-				{20250331, "FY2025", #date(2025, 3, 31), "FY2025 year-end", 2},
-				{20250401, "FY2025/26", #date(2025, 4, 1), "FY2025/26 tariff", 3},
-				{20260331, "FY2026", #date(2026, 3, 31), "FY2026 year-end", 4},
-				{20260401, "FY2026/27", #date(2026, 4, 1), "FY2026/27 direct tariff", 5},
-				{20260630, "FY2026", #date(2026, 6, 30), "June 2026 in-year", 6},
-				{20260701, "FY2026/27", #date(2026, 7, 1), "FY2026/27 municipal tariff", 7},
-				{20270401, "FY2027/28", #date(2027, 4, 1), "FY2027/28 intended tariff", 8},
-				{20310331, "FY2031", #date(2031, 3, 31), "FY2031 scenario", 9}
+				{20150331, "FY2015", #date(2015, 3, 31), "FY2015 year-end", 1, true, false},
+				{20160331, "FY2016", #date(2016, 3, 31), "FY2016 year-end", 2, true, false},
+				{20170331, "FY2017", #date(2017, 3, 31), "FY2017 year-end", 3, true, false},
+				{20180331, "FY2018", #date(2018, 3, 31), "FY2018 year-end", 4, true, false},
+				{20190331, "FY2019", #date(2019, 3, 31), "FY2019 year-end", 5, true, false},
+				{20200331, "FY2020", #date(2020, 3, 31), "FY2020 year-end", 6, true, false},
+				{20210331, "FY2021", #date(2021, 3, 31), "FY2021 year-end", 7, true, false},
+				{20220331, "FY2022", #date(2022, 3, 31), "FY2022 year-end", 8, true, false},
+				{20230331, "FY2023", #date(2023, 3, 31), "FY2023 year-end", 9, true, false},
+				{20240331, "FY2024", #date(2024, 3, 31), "FY2024 year-end", 10, true, false},
+				{20250331, "FY2025", #date(2025, 3, 31), "FY2025 year-end", 11, true, false},
+				{20250401, "FY2025/26", #date(2025, 4, 1), "Tariff Effective Date", 12, false, false},
+				{20260331, "FY2026", #date(2026, 3, 31), "FY2026 year-end", 13, true, false},
+				{20260401, "FY2026/27", #date(2026, 4, 1), "Tariff Effective Date", 14, false, false},
+				{20260630, "FY2026", #date(2026, 6, 30), "In-Year Management Disclosure", 15, false, false},
+				{20260701, "FY2026/27", #date(2026, 7, 1), "Tariff Effective Date", 16, false, false},
+				{20260717, "FY2026", #date(2026, 7, 17), "Event-Driven", 17, false, false},
+				{20260821, "FY2026", #date(2026, 8, 21), "Event-Driven", 18, false, false},
+				{20260902, "FY2026/27", #date(2026, 9, 2), "Regulatory Consultation Update", 19, false, false},
+				{20270401, "FY2027/28", #date(2027, 4, 1), "Intended Tariff Effective Date", 20, false, false},
+				{20310331, "FY2031", #date(2031, 3, 31), "FY2031 scenario", 21, true, true}
 				}
 			)
 			```

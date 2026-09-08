@@ -14,6 +14,7 @@ erDiagram
     DIM_DATE ||--o{ FACT_ELECTRICITY_SALES : "date_key"
     DIM_DATE ||--o{ FACT_SECURITY_METRIC : "reporting_date_key"
     DIM_DATE ||--o{ FACT_TARIFF_ADJUSTMENT : "effective_date_key"
+    DIM_DATE ||--o{ FACT_CORPORATE_METRIC : "date_key"
     DIM_MUNICIPALITY ||--o{ FACT_MUNICIPAL_DEBT : "municipality_key"
     DIM_MUNICIPALITY }o--|| DIM_PROVINCE : "province_key"
     DIM_DEBT_STATUS ||--o{ FACT_MUNICIPAL_DEBT : "debt_status_key"
@@ -82,16 +83,27 @@ fix — Phase 1 had no event-history concept, only a single mutable `legal_statu
 the published average increase for that customer group or average price path. **Lineage:**
 `source_dataset_id` supports the numeric value and `status_source_dataset_id` supports the current
 regulatory status. The FY2027/28 8.83% row therefore points to NERSA's revenue-path decision
-(DS035) and separately to the 4 September 2026 retail-structure consultation update (DS037).
+(DS035) and separately to NERSA's 2 September 2026 retail-structure consultation (DS037).
 An approved average revenue path is not automatically a final tariff for every customer category.
+
+### fact_municipal_debt_relief_programme
+**Grain:** one row per relief programme. Stores the R55.3bn approved legacy-debt scope and 71
+approved municipalities from National Treasury (DS039). It has no date-key relationship to the
+annual total-arrears fact, preventing a programme-scope value from being charted as FY2024 total
+arrears.
+
+### fact_corporate_metric
+**Grain:** one row per (date_key, metric_name). Holds governed operational/financial observations
+that do not fit the sales, debt, tariff or security facts (currently EAF and net profit).
 
 ## Power BI semantic model
 
 The source-controlled TMDL model contains `DimPeriod`, `FactMetric`, `FactTariff`, `FactScenario`,
-`SourceRegister` and `Measures`. Three single-direction many-to-one relationships connect the fact
+`SourceRegister` and `MeasureCatalog`. Three single-direction many-to-one relationships connect the fact
 tables to `DimPeriod`. Small public-data observations are embedded as inline Power Query tables,
-making the `.pbip` reproducible without local paths or credentials. SQLite remains the executable
-analytical-engineering layer; TMDL is the report-serving layer.
+making the `.pbip` reproducible without local paths or credentials. The inline rows are generated
+only from validated SQLite `vw_powerbi_*` views; Python contains no second set of business facts.
+One measure catalog generates both TMDL and the reviewable DAX export.
 
 ## Reconciliation notes (Step 7 explicit requirement)
 - Phase 1's `docs/data_model.md` described `FactMunicipalDebt`'s `status` column as if a
@@ -114,5 +126,5 @@ analytical-engineering layer; TMDL is the report-serving layer.
   the FY2026 KPI row, supplemented by the two individually-sourced non-coal cases in
   `fact_security_case` (fuel-oil, valve theft) and the NATJOINTS cluster observation in
   `fact_security_metric` (also non-coal-specific).
-- Data Gap #4: municipal debt has 3 comparable fiscal-year-end points and electricity sales has 2
-  — insufficient for CAGR (guarded to return BLANK below n=5 in both SQL and DAX).
+- Data Gap #4 is closed for municipal debt: 12 comparable fiscal-year-end points support dynamic
+  YoY and CAGR. Electricity sales and EAF still have only two annual observations.

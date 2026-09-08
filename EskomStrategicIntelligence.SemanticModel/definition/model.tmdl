@@ -9,9 +9,17 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
+annotation PBI_QueryOrder = ["DimPeriod","FactMetric","FactTariff","FactScenario","SourceRegister","MeasureCatalog"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["DevMode"]
+
 ref table DimPeriod
 ref table FactMetric
 ref table FactTariff
 ref table FactScenario
 ref table SourceRegister
 ref table MeasureCatalog
+
+ref role Viewer

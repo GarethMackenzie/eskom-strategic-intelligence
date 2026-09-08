@@ -36,7 +36,7 @@ table FactScenario
 			#table(
 				type table [PeriodKey = Int64.Type, ScenarioName = text, Metric = text, Value = number, Unit = text, EvidenceType = text, SourceDatasetId = text],
 				{
-				{20310331, "No further intervention", "Municipal Arrears", 358000000000, "Rand", "SCENARIO_MANAGEMENT", "DS003"}
+				{20310331, "No Intervention (Eskom Management)", "Municipal Arrears", 358000000000, "Rand", "SCENARIO_MANAGEMENT", "DS003"}
 				}
 			)
 			```

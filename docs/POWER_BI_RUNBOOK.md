@@ -1,76 +1,99 @@
 # Power BI Desktop and Service Runbook
 
-## What GitHub contains
+## Source-controlled deliverable
 
-GitHub stores the complete editable Power BI Project:
+The repository contains an editable Power BI Project rather than a binary preview:
 
 - `EskomStrategicIntelligence.pbip` — project entry point
 - `EskomStrategicIntelligence.Report/` — enhanced PBIR report definition
 - `EskomStrategicIntelligence.SemanticModel/` — TMDL semantic model
+- `powerbi/dax/measures.dax` — generated, reviewable copy of the measures
 
-This is real Power BI source control, not a screenshot or a placeholder. GitHub does not execute the
-Power BI rendering engine, so an interactive browser report must be published to Power BI Service.
+Do not hand-edit generated model, report, or DAX files. Change the governed SQL or
+`scripts/build_powerbi_project.py`, then run:
 
-## Desktop validation
+```powershell
+python scripts/build_project.py
+python -m pytest -q
+```
+
+The build order is SQLite schema and governed facts, release-blocking QA, then Power BI generation.
+The semantic model is produced only from the allow-listed `vw_powerbi_*` views.
+
+## Desktop validation procedure
 
 1. Install a current Power BI Desktop release.
-2. Clone or download the repository.
+2. Clone the repository and run the build and tests above.
 3. Open `EskomStrategicIntelligence.pbip`.
-4. Confirm that all six model tables and three relationships load.
-5. Refresh the semantic model.
-6. Check all five pages and verify that cards, charts and evidence tables render.
-7. Confirm these displayed values:
-   - FY2027/28 average path: 8.83%
-   - FY2026/27 direct increase: 8.76%
-   - FY2026/27 municipal increase: 9.01%
-   - FY2026 year-end municipal arrears: R111.6bn
-   - June 2026 in-year municipal arrears: R119.9bn
-   - electricity sales: 178 TWh
-   - EAF: 65.16%
-   - net profit after tax: R30.3bn
-8. Confirm the tariff page says the detailed retail structure was under consultation at
-   4 September 2026 and does not describe 8.83% as a final customer-category tariff.
+4. Confirm that all six model tables, three relationships, and 34 explicit measures load.
+5. Review all five pages at the intended display size and test cross-filtering and tooltips.
+6. Confirm the headline values listed below.
+7. Save only if you intend to review Desktop's metadata changes before committing them; the generator
+   remains the source of truth.
 
-On first open from a clean checkout, press **Esc** to leave Power BI's Home view, then use both
-**Refresh now** prompts to apply the relationships and populate the inline tables.
+Expected headline values:
 
-### Recorded Desktop validation
+| Metric | Expected result |
+|---|---:|
+| FY2026 year-end municipal arrears | R111.6bn |
+| Prior year-end municipal arrears | R94.6bn |
+| Year-on-year arrears growth | 17.97% |
+| FY2015–FY2026 arrears CAGR | 32.62% |
+| June 2026 in-year municipal arrears | R119.9bn |
+| Latest electricity sales | 178 TWh |
+| Sales year-on-year change | -6.17% |
+| Latest energy availability factor | 65.16% |
+| EAF change | +4.56 percentage points |
+| Net profit after tax | R30.3bn |
+| Illustrative tariff index | 133.44 |
+| Governed sources | 40 |
+| Latest actual evidence date | 2 September 2026 |
 
-Validated on 7 September 2026 in Power BI Desktop 2.157.1354.0 (August 2026):
+The 8.83% FY2027/28 average path is not a final customer-category tariff. The tariff page must retain
+the separate NERSA retail-structure consultation status and its 2 September 2026 evidence date.
 
-- the `.pbip` opened and the six-table semantic model loaded;
-- all inline tables refreshed (9 period rows, 14 metric rows, 4 tariff rows, 1 scenario row,
-  38 source-register rows and the measure-catalog seed row);
-- all three relationships applied;
-- all five report pages rendered without model or visual errors;
-- the expected debt, tariff, sales, EAF, profit and governance values displayed correctly.
+## Recorded Desktop validation
 
-The live test exposed and resolved two generator compatibility defects before release: invalid
-inline Power Query type tokens and Power BI's reserved `Measures` table name. Automated regression
-coverage now protects both fixes.
+Validated on 8 September 2026 in Power BI Desktop 2.157.1354.0 (August 2026):
+
+- the PBIP opened and a live local Analysis Services catalog loaded;
+- all 34 measures reported a valid engine state with no error message;
+- a live DAX query returned the expected headline values above;
+- the loaded tables contained 21 period rows, 29 metric rows, 4 tariff rows, 1 scenario row, and 40
+  source-register rows;
+- the five-page, 68-visual PBIR definition passed automated structural and field-reference checks;
+- compatibility level 1606 loaded successfully.
+
+Desktop testing exposed three release defects that were fixed before this validation:
+
+1. compatibility level 1600 attempted to downgrade Desktop's 1606 model;
+2. `Path` was parsed as an invalid DAX variable name;
+3. `FirstDate` collided with the DAX `FIRSTDATE` function name.
+
+Regression tests now cover compatibility level 1606 and the reserved identifiers. The live-engine
+test proves model compilation and measure execution. A final human visual inspection at the target
+screen size is still required before publication because layout and accessibility cannot be proven by
+model execution alone.
 
 ## Power BI Service publication
 
-1. In Power BI Desktop, choose **Publish**.
+1. Open the validated PBIP in Power BI Desktop and choose **Publish**.
 2. Sign in with the account authorised for the target workspace.
 3. Select the intended workspace and publish the semantic model and report.
-4. In Power BI Service, open the report and repeat the five-page interaction check.
-5. Configure permissions. Do not enable public “Publish to web” unless the data owner intentionally
-   accepts fully public, unauthenticated access.
-6. Add the verified Service URL to the README only after the report opens successfully in a clean
-   browser session with the intended permission model.
+4. Open the report in Power BI Service and repeat the five-page interaction and accessibility check.
+5. Configure least-privilege permissions. Do not use public **Publish to web** unless the data owner
+   deliberately accepts unauthenticated public access.
+6. Add a Service URL to the README only after it succeeds in a clean browser session with the intended
+   permission model.
 
-## Current status
-
-The editable project is source-validated and Power BI Desktop-runtime-validated. Power BI Service
-publication remains intentionally separate because it requires selection of an authorised target
-workspace and its permission model.
+## Release gates
 
 | Gate | Status |
 |---|---|
-| PBIP/PBIR/TMDL source generated | PASS |
-| Automated structural QA | PASS |
-| SQLite/data QA | PASS |
-| GitHub Actions | Pending this release push |
-| Power BI Desktop runtime | PASS — 2.157.1354.0 (August 2026), 7 Sep 2026 |
-| Power BI Service publication | Not yet published |
+| PBIP/PBIR/TMDL generated from governed SQLite views | PASS |
+| SQL and source-register QA | PASS — 17 checks |
+| Python test suite | PASS — 32 tests |
+| Static PBIR structure | PASS — 5 pages, 68 visuals |
+| Power BI Desktop model runtime | PASS — 2.157.1354.0, 8 Sep 2026 |
+| Human visual/accessibility sign-off | Required before publication |
+| Power BI Service publication | Requires authorised workspace selection |

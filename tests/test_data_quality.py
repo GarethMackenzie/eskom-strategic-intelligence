@@ -13,6 +13,7 @@ or directly:
 
 All shipped SQL targets SQLite and is executed during every database build.
 """
+
 import csv
 import os
 import re
@@ -23,7 +24,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-from src.analytics.build_database import build_database
+from src.analytics.build_database import build_database  # noqa: E402
 
 SQL_DIR = os.path.join(REPO_ROOT, "sql")
 DOCS_DIR = os.path.join(REPO_ROOT, "docs")
@@ -44,13 +45,19 @@ def load_source_register():
 # Tests
 # ---------------------------------------------------------------------------
 
+
 def test_no_duplicate_fact_primary_keys():
     conn = build_db()
     cur = conn.cursor()
     checks = {
         "fact_municipal_debt": ["date_key", "municipality_key"],
         "fact_electricity_sales": ["date_key", "segment_key"],
-        "fact_security_metric": ["reporting_date_key", "incident_type_key", "metric_key", "location_key"],
+        "fact_security_metric": [
+            "reporting_date_key",
+            "incident_type_key",
+            "metric_key",
+            "location_key",
+        ],
         "fact_municipal_debt_scenario": ["date_key", "scenario_name"],
     }
     for table, keys in checks.items():
@@ -78,9 +85,15 @@ def test_no_orphan_dimension_keys():
 def test_every_fact_observation_has_source_lineage():
     conn = build_db()
     cur = conn.cursor()
-    for table in ["fact_municipal_debt", "fact_electricity_sales", "fact_security_metric",
-                  "fact_municipal_debt_scenario"]:
-        cur.execute(f"SELECT COUNT(*) FROM {table} WHERE source_dataset_id IS NULL OR source_dataset_id = ''")
+    for table in [
+        "fact_municipal_debt",
+        "fact_electricity_sales",
+        "fact_security_metric",
+        "fact_municipal_debt_scenario",
+    ]:
+        cur.execute(
+            f"SELECT COUNT(*) FROM {table} WHERE source_dataset_id IS NULL OR source_dataset_id = ''"
+        )
         n = cur.fetchone()[0]
         assert n == 0, f"{table} has {n} rows with missing source_dataset_id"
     print("PASS: every fact row has a non-null source_dataset_id")
@@ -115,7 +128,9 @@ def test_latest_reported_debt_resolves_correctly():
     single most recent observation, NOT a sum of all historical balances."""
     conn = build_db()
     cur = conn.cursor()
-    cur.execute("SELECT SUM(gross_arrears_rand) FROM fact_municipal_debt WHERE municipality_key = 0")
+    cur.execute(
+        "SELECT SUM(gross_arrears_rand) FROM fact_municipal_debt WHERE municipality_key = 0"
+    )
     naive_sum = cur.fetchone()[0]
     cur.execute("""
         SELECT gross_arrears_rand FROM fact_municipal_debt
@@ -123,8 +138,12 @@ def test_latest_reported_debt_resolves_correctly():
     """)
     latest = cur.fetchone()[0]
     assert latest == 119900000000.00, f"Expected latest = R119.9bn, got {latest}"
-    assert naive_sum != latest, "Sanity check: naive SUM should differ from latest (else test is vacuous)"
-    print(f"PASS: latest-resolution logic returns R{latest/1e9:.1f}bn, correctly distinct from naive SUM R{naive_sum/1e9:.1f}bn")
+    assert naive_sum != latest, (
+        "Sanity check: naive SUM should differ from latest (else test is vacuous)"
+    )
+    print(
+        f"PASS: latest-resolution logic returns R{latest / 1e9:.1f}bn, correctly distinct from naive SUM R{naive_sum / 1e9:.1f}bn"
+    )
 
 
 def test_data_as_of_cannot_resolve_to_scenario_date():
@@ -141,10 +160,13 @@ def test_data_as_of_cannot_resolve_to_scenario_date():
 
 def test_source_freshness_uses_latest_actual_disclosure():
     conn = build_db()
-    actual = conn.execute(
-        "SELECT data_reported_as_of FROM vw_report_freshness"
-    ).fetchone()[0]
-    assert actual == "2026-09-04", f"Expected 2026-09-04, got {actual}"
+    actual = conn.execute("SELECT data_reported_as_of FROM vw_report_freshness").fetchone()[0]
+    expected = conn.execute("""
+        SELECT MAX(date(publication_date)) FROM stg_data_source_register
+        WHERE evidence_type NOT LIKE 'SCENARIO%'
+          AND LOWER(verification_status) NOT LIKE '%superseded%'
+    """).fetchone()[0]
+    assert actual == expected, f"Expected source-derived {expected}, got {actual}"
     leaked = conn.execute("""
         SELECT r.dataset_id
         FROM fact_source_refresh r
@@ -152,7 +174,7 @@ def test_source_freshness_uses_latest_actual_disclosure():
         WHERE s.evidence_type LIKE 'SCENARIO%'
     """).fetchall()
     assert leaked == [], f"Scenario sources leaked into freshness: {leaked}"
-    print("PASS: freshness resolves to 2026-09-04 and excludes scenarios")
+    print(f"PASS: freshness resolves dynamically to {actual} and excludes scenarios")
 
 
 def test_all_sql_files_execute_in_release_build():
@@ -170,9 +192,7 @@ def test_all_sql_files_execute_in_release_build():
     }
     actual_objects = {
         row[0]
-        for row in conn.execute(
-            "SELECT name FROM sqlite_master WHERE type IN ('table', 'view')"
-        )
+        for row in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table', 'view')")
     }
     assert expected_objects <= actual_objects, expected_objects - actual_objects
     print("PASS: complete release SQL stack executes and creates governed objects")
@@ -195,9 +215,12 @@ def test_current_fiscal_year_end_debt_is_not_latest_in_year_snapshot():
     assert latest_any == 119900000000
 
     dax = (Path(REPO_ROOT) / "powerbi" / "dax" / "measures.dax").read_text(encoding="utf-8")
-    yoy_block = dax.split("Municipal Debt YoY % =", 1)[1].split("Municipal Debt Absolute Change =", 1)[0]
-    assert "[Latest Fiscal Year-End Municipal Debt]" in yoy_block
-    assert "[Latest Reported Municipal Debt]" not in yoy_block
+    yoy_block = dax.split("Municipal Arrears YoY % =", 1)[1].split(
+        "Municipal Arrears Long-Run CAGR =", 1
+    )[0]
+    assert "[Latest Year-End Municipal Arrears]" in yoy_block
+    assert "[Prior Year-End Municipal Arrears]" in yoy_block
+    assert "119900000000" not in yoy_block
     print("PASS: fiscal-year comparison uses R111.6bn, not the R119.9bn in-year snapshot")
 
 
@@ -212,7 +235,11 @@ def test_source_register_ids_unique_and_evidence_atomic():
         "SCENARIO_MANAGEMENT",
         "SCENARIO_PROJECT",
     }
-    invalid = [(row["dataset_id"], row["evidence_type"]) for row in rows if row["evidence_type"] not in allowed]
+    invalid = [
+        (row["dataset_id"], row["evidence_type"])
+        for row in rows
+        if row["evidence_type"] not in allowed
+    ]
     assert invalid == [], f"Non-atomic/invalid evidence types: {invalid}"
     print(f"PASS: {len(rows)} unique source IDs with atomic evidence classifications")
 
@@ -291,7 +318,9 @@ def test_no_case_source_shared_across_unrelated_cases():
     three unrelated cases)."""
     conn = build_db()
     cur = conn.cursor()
-    cur.execute("SELECT source_dataset_id, COUNT(*) c, GROUP_CONCAT(case_title) FROM fact_security_case GROUP BY source_dataset_id HAVING COUNT(*) > 1")
+    cur.execute(
+        "SELECT source_dataset_id, COUNT(*) c, GROUP_CONCAT(case_title) FROM fact_security_case GROUP BY source_dataset_id HAVING COUNT(*) > 1"
+    )
     shared = cur.fetchall()
     assert shared == [], f"Multiple unrelated cases share one source_dataset_id: {shared}"
     print("PASS: every security case has its own distinct source_dataset_id")
@@ -339,6 +368,42 @@ def test_tariff_path_preserves_regulatory_status():
     print("PASS: 8.83% path is present with consultation status and dual-source lineage")
 
 
+def test_canonical_annual_municipal_debt_series():
+    conn = build_db()
+    actual = conn.execute("""
+        SELECT d.fiscal_year, f.gross_arrears_rand / 1000000000.0
+        FROM fact_municipal_debt f JOIN dim_date d USING (date_key)
+        WHERE f.municipality_key=0 AND d.is_fiscal_year_end=TRUE
+        ORDER BY d.fiscal_year
+    """).fetchall()
+    expected = list(
+        zip(
+            range(2015, 2027),
+            [5.0, 6.0, 9.4, 13.6, 19.9, 28.0, 35.3, 44.8, 58.5, 74.4, 94.6, 111.6],
+            strict=True,
+        )
+    )
+    assert actual == expected
+
+
+def test_debt_relief_scope_cannot_leak_into_annual_total():
+    conn = build_db()
+    relief = conn.execute("""
+        SELECT approved_legacy_debt_rand, approved_municipalities
+        FROM fact_municipal_debt_relief_programme
+    """).fetchone()
+    assert relief == (55300000000, 71)
+    assert (
+        conn.execute("""
+        SELECT COUNT(*) FROM fact_municipal_debt
+        WHERE municipality_key=0 AND gross_arrears_rand=55300000000
+    """).fetchone()[0]
+        == 0
+    )
+    objects = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert "fact_municipal_debt_alternate_estimate" not in objects
+
+
 ALL_TESTS = [
     test_no_duplicate_fact_primary_keys,
     test_no_orphan_dimension_keys,
@@ -358,6 +423,8 @@ ALL_TESTS = [
     test_no_case_source_shared_across_unrelated_cases,
     test_metric_yoy_not_summed_as_level,
     test_tariff_path_preserves_regulatory_status,
+    test_canonical_annual_municipal_debt_series,
+    test_debt_relief_scope_cannot_leak_into_annual_total,
 ]
 
 if __name__ == "__main__":

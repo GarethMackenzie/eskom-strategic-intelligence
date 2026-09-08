@@ -70,6 +70,14 @@ across the whole table for a "current balance" — see `powerbi/dax/measures.dax
 `Latest Reported Municipal Debt` for the correct pattern, and
 `docs/technical_audit.md` P0-3 for the bug this replaced.
 
+## fact_municipal_debt_relief_programme
+Grain: one row per programme. Holds the National Treasury-approved legacy-debt amount and approved
+municipality count. The R55.3bn value is intentionally absent from `fact_municipal_debt`.
+
+## fact_corporate_metric
+Grain: one row per (date_key, metric_name). Holds EAF and net-profit observations with domain,
+unit, evidence type and source lineage.
+
 ## fact_municipal_debt_scenario
 Grain: one row per (date_key, scenario_name). **Physically separate table** from
 `fact_municipal_debt` — no shared primary key, so a naive join/union cannot blend scenario and
@@ -114,3 +122,9 @@ separately qualified forward average price path.
 | evidence_type | VARCHAR(30) | `FACT_REPORTED` for the published regulatory observation |
 | source_dataset_id | VARCHAR(10) | Lineage for the numeric value |
 | status_source_dataset_id | VARCHAR(10) | Separate lineage for current regulatory status |
+
+## Power BI semantic export views
+
+`vw_powerbi_period`, `vw_powerbi_metric`, `vw_powerbi_tariff`, `vw_powerbi_scenario` and
+`vw_powerbi_source` form the only supported SQLite-to-Power-BI interface. Their columns map exactly
+to the six generated TMDL tables. The PBIP generator does not contain a parallel fact dataset.

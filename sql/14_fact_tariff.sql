@@ -1,6 +1,6 @@
 -- Tariff and revenue-path observations. The FY2027/28 row deliberately
 -- distinguishes the approved average path from the retail tariff structure,
--- which was still under NERSA consultation on 4 September 2026.
+-- which NERSA formally placed under consultation on 2 September 2026.
 
 DROP TABLE IF EXISTS fact_tariff_adjustment;
 CREATE TABLE fact_tariff_adjustment (
@@ -24,7 +24,7 @@ INSERT INTO fact_tariff_adjustment VALUES
 (20260701, 'FY2026/27', 'Municipal bulk purchases', 9.01, '2026-07-01',
  'Approved and implemented', 'FACT_REPORTED', 'DS036', 'DS036'),
 (20270401, 'FY2027/28', 'Average price path', 8.83, '2027-04-01',
- 'Average revenue/price path established; detailed retail tariff structure and customer-category allocation under NERSA consultation as at 2026-09-04',
+ 'Average revenue/price path established; detailed ERTSA structure and customer-category allocation under NERSA consultation from 2026-09-02',
  'FACT_REPORTED', 'DS035', 'DS037');
 
 DROP VIEW IF EXISTS vw_tariff_path;

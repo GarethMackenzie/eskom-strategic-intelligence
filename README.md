@@ -5,114 +5,86 @@
 [![Data Integrity CI](https://github.com/GarethMackenzie/eskom-strategic-intelligence/actions/workflows/data-integrity.yml/badge.svg)](https://github.com/GarethMackenzie/eskom-strategic-intelligence/actions/workflows/data-integrity.yml)
 
 An executive analytics case study built from governed public evidence on Eskom's municipal debt,
-electricity demand, tariffs, financial performance and physical-security risk. The repository
-contains a complete, editable Power BI Project (`.pbip`), an enhanced PBIR report, a TMDL semantic
-model, SQLite analytics, Python automation, automated QA and CI.
+electricity demand, tariffs, financial performance and physical-security risk. It ships as an
+editable Power BI Project (`.pbip`), PBIR report, TMDL semantic model, reproducible SQLite model,
+Python build pipeline, automated QA and GitHub Actions workflow.
 
-**Data reported as of 4 September 2026.** Management scenarios are physically separated from
-reported actuals. No customer, employee, confidential operational or personal data is used.
+**Latest non-scenario evidence: 2 September 2026.** This date is derived from the source register
+during the build. No private customer, employee or operational data is used.
 
 ![Eskom Strategic Intelligence Power BI project preview](assets/eskom-power-bi-preview.svg)
 
-> The image is a labelled design preview, not a fabricated Power BI screenshot. GitHub hosts the
-> complete text-based Power BI source. Interactive browser use requires publication to Power BI
-> Service. The project was live-tested in Power BI Desktop 2.157.1354.0 (August 2026) on
-> 7 September 2026; details are recorded in [`docs/POWER_BI_RUNBOOK.md`](docs/POWER_BI_RUNBOOK.md).
+> This labelled design preview is generated from the same validated SQLite data as the Power BI
+> model. It is not represented as a Power BI Desktop screenshot.
+
+## Critical correction in this release
+
+The canonical municipal and metro arrears series is now Eskom's official FY2015–FY2026 series:
+
+| FY | Rbn | FY | Rbn | FY | Rbn |
+|---:|---:|---:|---:|---:|---:|
+| 2015 | 5.0 | 2019 | 19.9 | 2023 | 58.5 |
+| 2016 | 6.0 | 2020 | 28.0 | 2024 | **74.4** |
+| 2017 | 9.4 | 2021 | 35.3 | 2025 | 94.6 |
+| 2018 | 13.6 | 2022 | 44.8 | 2026 | 111.6 |
+
+The previously displayed **R55.3bn is not FY2024 total arrears**. National Treasury identifies it
+as the approved legacy-debt scope of 71 Municipal Debt Relief Programme applications, based on
+debt at 31 March 2023. That programme-scope fact now lives in a separate table and cannot leak into
+the annual total-arrears trend. The June 2026 R119.9bn observation remains a separate in-year
+snapshot, and R358bn at FY2031 remains a separate Eskom management scenario.
 
 ## Executive snapshot
 
-| Metric | Reported value | Context | Evidence |
-|---|---:|---|---|
-| FY2027/28 average price path | **8.83%** | Intended from 1 April 2027 | NERSA revenue path; retail structure under consultation at 4 Sep 2026 |
-| FY2026/27 direct-customer increase | 8.76% | Implemented 1 April 2026 | Official Eskom/NERSA decision |
-| FY2026/27 municipal bulk increase | 9.01% | Implemented 1 July 2026 | Official Eskom/NERSA decision |
-| Municipal arrears, year-end | R111.6bn | +17.9% YoY | Official Eskom disclosure |
-| Municipal arrears, latest in-year | R119.9bn | June 2026 | Secondary exact figure; official release says approximately R119bn |
-| Electricity sales | 178 TWh | -6.2% YoY | Official Eskom disclosure |
-| Energy Availability Factor | 65.16% | Up from 60.6% | Official Eskom disclosure |
-| Net profit after tax | R30.3bn | Second consecutive profit | Official Eskom disclosure |
-| Municipal arrears scenario | R358bn by FY2031 | No-intervention management scenario | **Scenario — not a reported actual** |
+| Metric | Value | Evidence status |
+|---|---:|---|
+| FY2026 municipal arrears | R111.6bn | Official year-end actual |
+| June 2026 municipal arrears | R119.9bn | In-year observation; separate from year-end |
+| FY2015–FY2026 arrears CAGR | Derived in the model | Dynamic first/latest comparator |
+| Electricity sales | 178 TWh | Official FY2026 disclosure |
+| Energy Availability Factor | 65.16% | Official FY2026 disclosure |
+| Net profit after tax | R30.3bn | Official FY2026 disclosure |
+| FY2026/27 direct / municipal averages | 8.76% / 9.01% | Implemented |
+| FY2027/28 average price path | 8.83% | Average path, not every customer's tariff |
+| FY2031 arrears | R358bn | Eskom management no-intervention scenario |
+
+NERSA's 8.83% is modelled as an average price/revenue path. The detailed FY2027/28 Eskom Retail
+Tariff Structural Adjustment and customer-category allocation were placed under consultation by
+NERSA on 2 September 2026 and are not presented as final category tariffs.
+
+## Architecture
+
+```text
+40-record governed public source register
+                  |
+         SQLite dimensional model
+                  |
+ 17 release-blocking data-quality checks
+                  |
+ validated semantic export views
+                  |
+ PBIP generator -> TMDL + PBIR + DAX + SVG
+                  |
+       5-page Power BI report
+```
+
+`scripts/build_project.py` builds SQLite first, runs release-blocking QA, and only then generates
+Power BI artifacts from the validated `vw_powerbi_*` views. The generator contains no duplicated
+business-fact arrays. One Python measure catalog emits both TMDL measures and the reviewable
+`powerbi/dax/measures.dax` export.
 
 ## Power BI solution
 
-Open [`EskomStrategicIntelligence.pbip`](EskomStrategicIntelligence.pbip) in a current version of
-Power BI Desktop. The source-controlled solution contains:
+Open `EskomStrategicIntelligence.pbip` in a current Power BI Desktop release. The project contains:
 
-- 5 report pages: Executive Overview, Tariff & Affordability, Municipal Debt, Operations &
-  Security, and Data Governance
-- 68 report visuals with slicers, executive KPIs, trends, regulatory status and source-lineage tables
-- 30 explicit DAX measures organised by business domain
-- 6 semantic-model tables with 3 governed relationships
-- 38 evidence-register records embedded in the semantic model
-- self-contained Power Query tables, with no local absolute path or external credential dependency
-- a reusable corporate theme and permanent evidence/limitations disclosures
+- 5 pages and 68 visuals;
+- 6 semantic-model tables and 3 one-way relationships;
+- 34 explicit measures with dynamic latest/prior comparator logic;
+- the complete 40-record evidence register;
+- separate reported-actual, in-year, tariff-path and scenario structures;
+- a portable inline model with no absolute local paths or credentials.
 
-The 8.83% card is deliberately qualified: it represents the FY2027/28 average revenue/price path.
-The detailed retail tariff structure and customer-category allocation were still under NERSA
-consultation on 4 September 2026. The illustrative cumulative tariff index is a mathematical index,
-not a household or business bill forecast.
-
-## Analytical architecture
-
-```text
-38-record governed public source register
-                 |
-      Python ingestion and validation
-                 |
-       SQLite dimensional model
-                 |
- 11 build-time checks + 27 release tests
-                 |
- PBIP -> PBIR report -> TMDL semantic model
-                 |
-      5-page executive Power BI report
-```
-
-`python scripts/build_project.py` deterministically rebuilds the Power BI source, SQLite database
-and QA summary. CI compiles Python, executes every SQL file, rebuilds the PBIP/PBIR/TMDL artefacts,
-runs the full test suite and validates the release outputs.
-
-## What the analysis shows
-
-- The 8.83% FY2027/28 average path is established, but it should not be presented as a fully final
-  customer-category tariff schedule while the detailed retail structure is under consultation.
-- Point-in-time municipal debt must resolve to one dated observation; summing historical balances
-  would create a meaningless total.
-- The June 2026 in-year balance (R119.9bn) and FY2026 year-end balance (R111.6bn) answer different
-  questions and remain separate throughout SQL, DAX and the report.
-- Sales fell while plant availability improved. The project reports the association and does not
-  claim a causal relationship.
-- Public evidence supports aggregate physical-security metrics, not a coal-specific loss series.
-- Two credible sources conflict on the FY2024 municipal-arrears baseline; both remain visible as an
-  unresolved reconciliation item.
-
-## Engineering controls
-
-- source lineage at observation grain through `source_dataset_id`
-- separate reported-actual, regulatory-path and scenario facts
-- leakage-safe report freshness that excludes scenario horizons
-- explicit latest-observation and fiscal-year-end measures
-- dual-source lineage for the 8.83% value and its current consultation status
-- idempotent SQLite DDL and seed scripts
-- deterministic PBIP/PBIR/TMDL generation with stable object identifiers and page-level slicers
-- structural tests for report pages, visual references, model relationships and local-path safety
-- privacy and secret scanning across tracked text
-- GitHub Actions on push, pull request and manual dispatch
-
-## Repository guide
-
-| Path | Purpose |
-|---|---|
-| `EskomStrategicIntelligence.pbip` | Power BI Desktop project entry point |
-| `EskomStrategicIntelligence.Report/` | Enhanced PBIR report definition and theme |
-| `EskomStrategicIntelligence.SemanticModel/` | TMDL model, measures, tables and relationships |
-| `scripts/build_project.py` | One-command database, QA and Power BI build |
-| `scripts/build_powerbi_project.py` | Deterministic PBIP/PBIR/TMDL generator |
-| `src/` | CSV ingestion, database build and validation package |
-| `sql/` | SQLite staging, dimensions, facts, QA and analytical views |
-| `tests/` | Data, methodology, privacy and Power BI structural release tests |
-| `docs/data_source_register.csv` | 38-record evidence and provenance register |
-| `reports/` | Evidence-tagged strategic intelligence report |
+See `docs/POWER_BI_RUNBOOK.md` for the recorded runtime test and Service publication boundary.
 
 ## Reproduce the release
 
@@ -120,24 +92,43 @@ Python 3.11 or later is required.
 
 ```bash
 python -m pip install -r requirements.txt
+python -m compileall -q src scripts tests
+python -m ruff check src scripts tests
+python -m ruff format --check src scripts tests
 python scripts/build_project.py
 python -m pytest -q
+git diff --exit-code
+python scripts/build_project.py
+git diff --exit-code
 ```
 
-Expected result: **11/11 build-time checks pass and 27/27 pytest tests pass**.
+The last four commands prove that the complete SQL/PBIP build passes, tests pass and a second build
+is byte-stable relative to source control. CI runs the same gates on pushes and pull requests.
 
-For Power BI Desktop and Service steps, see the
-[`Power BI runbook`](docs/POWER_BI_RUNBOOK.md).
+## Repository guide
+
+| Path | Purpose |
+|---|---|
+| `EskomStrategicIntelligence.pbip` | Power BI Desktop entry point |
+| `EskomStrategicIntelligence.Report/` | PBIR report pages, visuals and theme |
+| `EskomStrategicIntelligence.SemanticModel/` | TMDL model, tables, measures and relationships |
+| `docs/data_source_register.csv` | Governed provenance register |
+| `sql/15_semantic_exports.sql` | Canonical SQLite-to-Power-BI interface |
+| `scripts/build_project.py` | Build → QA → Power BI orchestration |
+| `scripts/build_powerbi_project.py` | Deterministic artifact generator and measure catalog |
+| `tests/` | Data, source, semantic-model, visual and portability tests |
+| `reports/eskom_strategic_intelligence_report.md` | Evidence-led strategic report |
 
 ## Responsible interpretation
 
-- This is a portfolio-grade public-data case study, not an Eskom operational system.
-- The 8.83% path remains subject to the regulatory qualifications recorded in the source register.
-- Forecasts, scenarios and recommendations are not presented as reported actuals.
-- Association is not presented as causation.
-- Granular municipality, customer-segment and coal-specific security data gaps remain visible.
-- Data and regulatory status should be revalidated before real-world decision use.
+- Point-in-time balances must never be summed across dates.
+- Actuals, in-year observations and management scenarios answer different questions.
+- Association is not causation; the sales/EAF relationship is descriptive.
+- Security metrics are aggregate physical-security disclosures, not coal-specific.
+- Municipality-level, customer-segment and coal-specific public data gaps remain explicit.
+- Revalidate data and regulatory status before real-world decision use.
 
-Read the [full report](reports/eskom_strategic_intelligence_report.md),
+Read the [report](reports/eskom_strategic_intelligence_report.md),
 [methodology](docs/methodology.md), [data model](docs/data_model.md),
-[quality scorecard](docs/QUALITY_SCORECARD.md) and [limitations](docs/limitations.md).
+[quality scorecard](docs/QUALITY_SCORECARD.md), [technical audit](docs/technical_audit.md) and
+[limitations](docs/limitations.md).

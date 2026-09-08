@@ -1,6 +1,6 @@
 # Eskom Strategic Intelligence
 ### Municipal Debt • Electricity Demand • Coal Supply-Chain Risk
-**Data reported as of: 4 September 2026 · Pipeline last reviewed: 4 September 2026 · Status: source-validated Power BI release candidate**
+**Latest non-scenario evidence: 2 September 2026 · Final integrity release · Freshness derived from the governed source register**
 
 ---
 
@@ -13,21 +13,21 @@ over the same period, while plant availability (EAF) improved from 60.6% to 65.1
 aggregate physical-security crime disclosure (which spans cable, coal, fuel, and several other
 categories together, not coal specifically) showed incidents down 13% and estimated losses down
 18% to R191 million. [FACT, QUALIFIED] NERSA's revenue path indicates an 8.83% average increase for
-FY2027/28, while the detailed retail tariff structure and customer-category allocation remained
-under consultation at 4 September 2026.
+FY2027/28, while NERSA's detailed retail tariff structure and customer-category allocation were
+under consultation from 2 September 2026.
 
 This report documents what the available evidence supports on each of these three questions,
-what it does not yet support, and where two independently sourced figures for the same period
-disagree (Section 4.4). Recommendations are scoped to what current evidence can defend; several
+what it does not yet support, and how superficially similar values with different scopes are kept
+separate (Section 4.4). Recommendations are scoped to what current evidence can defend; several
 requested analyses (municipality-level debt ranking, segment-level sales decomposition, a
 coal-specific crime series) remain open research items, documented in `docs/limitations.md` rather
 than filled with estimates.
 
 ## 2. Scope
 
-Phase 2 of a multi-phase build. This pass corrected data-integrity and modelling defects identified
-in a formal technical audit (`docs/technical_audit.md`) and ran an additional primary-source
-research pass that partially closed two of the four data gaps carried from Phase 1 (see Section 11).
+This final integrity release corrects the municipal-debt history and source scopes, establishes a
+canonical SQLite-to-Power-BI path, removes hardcoded semantic comparators and strengthens automated
+and runtime release gates. See `docs/technical_audit.md`.
 
 ## 3. Data and Methodology
 
@@ -45,11 +45,11 @@ Municipalities represent an estimated 40–44% of Eskom's total electricity sale
 excluded R15.8 billion of billed-but-uncollectable revenue from its FY2026 income statement.
 
 ### 4.1 A longer view
-[FACT] Three genuinely comparable fiscal-year-end figures are now available: R55.3 billion (March
-2024), R94.6 billion (March 2025), and R111.6 billion (March 2026) — implied year-on-year growth
-of approximately 71% (FY2024→FY2025) and 18% (FY2025→FY2026). Three points remain below the five
-this project requires before calculating a CAGR (`docs/limitations.md` Data Gap #4); the growth
-rate is reported here as year-on-year percentages, not a compounded long-run rate.
+[FACT] Eskom's official comparable fiscal-year-end series now covers FY2015–FY2026: R5.0bn,
+R6.0bn, R9.4bn, R13.6bn, R19.9bn, R28.0bn, R35.3bn, R44.8bn, R58.5bn, R74.4bn, R94.6bn and
+R111.6bn. FY2024→FY2025 growth was approximately 27%, followed by 18% in FY2026. The dashboard
+derives both YoY change and the FY2015–FY2026 CAGR dynamically from the first, prior and latest
+available observations; no comparator value is embedded in DAX.
 
 ### 4.2 Concentration
 [FACT] A provincial breakdown identifies Mpumalanga (R30.5 billion) and Free State (R29.1 billion)
@@ -71,14 +71,13 @@ Taken together, these indicate the debt-relief programme's compliance rate is lo
 majority of those municipalities. This is a description of the programme's observed compliance
 pattern, not an assessment of the programme's design.
 
-### 4.4 An unresolved data conflict
-[FACT, flagged] A Parliamentary committee record captures Eskom's CFO stating municipal arrears
-grew from approximately R74 billion (March 2024) to approximately R95 billion (March 2025) — a
-different starting figure than the R55.3 billion used in Section 4.1, though the endpoints are
-close. This project does not resolve which figure is correct; both are retained
-(`fact_municipal_debt` uses the Treasury-sourced figure; the PMG figure is preserved separately in
-`fact_municipal_debt_alternate_estimate`), and the discrepancy is documented as an open item
-requiring the full primary committee minutes and Treasury MTBPS document to reconcile.
+### 4.4 Scope reconciliation: total arrears vs debt-relief approvals
+[FACT] The previous release's apparent conflict is resolved. Eskom's CFO testimony of approximately
+R74bn (March 2024) and approximately R95bn (March 2025) is consistent with Eskom's exact official
+series of R74.4bn and R94.6bn. National Treasury's R55.3bn is the approved legacy-debt amount across
+71 Municipal Debt Relief Programme applications, based on the R58.5bn owed at 31 March 2023. It is
+not FY2024 total arrears. The data model therefore stores the R55.3bn programme amount separately
+and does not retain a false alternate total-arrears series.
 
 ### 4.5 Case study — City of Johannesburg / City Power
 [FACT] On 17 May 2026, Eskom issued formal notice under the Promotion of Administrative Justice
@@ -129,8 +128,8 @@ industrial loads), not originating the strategy.
 2026 and 9.01% for municipal bulk purchases from 1 July 2026. **[FACT, QUALIFIED]** NERSA's MYPD6
 settlement/re-determination path indicates an 8.83% estimated average price increase for FY2027/28,
 intended from 1 April 2027 and subject to the Regulatory Clearing Account qualification recorded
-in the regulator's statement. As at 4 September 2026, the detailed retail tariff structural
-adjustment and allocation across customer categories was under consultation.
+in the regulator's statement. NERSA's official 2 September 2026 document placed the detailed
+retail tariff structural adjustment and allocation across customer categories under consultation.
 
 The dashboard therefore separates three concepts: approved/implemented FY2026/27 averages, the
 FY2027/28 average revenue path, and the pending customer-category structure. It does not present
@@ -241,26 +240,23 @@ actually supports, following the structured recommendation format below (Step 17
 
 ## 9. Implementation Roadmap
 
-Ordered by dependency: (1) retrieve full PMG committee minutes and Treasury MTBPS document to
-resolve the Section 4.4 data conflict; (2) retrieve National Treasury's Local Government Database
-or Eskom's Integrated Report debtor schedule for full Data Gap #1 closure; (3) retrieve the FY2026
-Integrated Report's sales-by-category table for Data Gap #2; (4) search SAPS/Hawks, SIU, and
-Portfolio Committee briefings on PMG (which proved productive for municipal-debt material in this
-pass) for coal-specific security data; (5) retrieve Eskom's FY2021–FY2023 annual reports for the
-remaining history needed for a defensible CAGR; (6) complete the Power BI Desktop runtime check and
-publish to an authorised Power BI Service workspace if an interactive browser report is required.
+Ordered by dependency: (1) retrieve a complete municipality-level arrears and payment-history
+dataset for full Data Gap #1 closure; (2) retrieve a sales-by-category table for Data Gap #2;
+(3) search SAPS/Hawks, SIU and Portfolio Committee disclosures for coal-specific security data;
+(4) extend the long-run electricity-sales and EAF series; and (5) publish to an authorised Power BI
+Service workspace only if a browser-interactive report and permission model are required.
 
 ## 10. KPI Framework
 See `docs/kpi_dictionary.md`.
 
 ## 11. Risks and Limitations
-See `docs/limitations.md` — four data gaps (two partially closed) and one unresolved source
-conflict. The estimated 2-3 GW surplus-capacity statement is now primary-source verified (DS034)
-but remains contextual rather than a modelled operational KPI.
+See `docs/limitations.md`. The municipal-debt history and R55.3bn scope defect are closed. Granular
+municipality, customer-segment and coal-specific security gaps remain, as does long-run sales/EAF
+history. The estimated 2-3 GW surplus-capacity statement remains contextual rather than a live KPI.
 
 ## 12. Data Gaps
 See `docs/limitations.md`.
 
 ## 13. Sources
-See `docs/data_source_register.csv` — 35 entries as of this release review, each with a
+See `docs/data_source_register.csv` — 40 entries as of this release review, each with a
 `source_tier` distinct from `originating_entity`.

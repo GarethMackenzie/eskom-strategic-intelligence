@@ -1,5 +1,42 @@
 # Changelog
 
+## [Final integrity release] - 2026-09-08
+
+### Corrected
+
+- Replaced the incorrect FY2024 R55.3bn total-arrears value with Eskom's official R74.4bn.
+- Reclassified R55.3bn as the National Treasury-approved legacy-debt scope of the Municipal Debt
+  Relief Programme and isolated it from the annual arrears fact.
+- Removed the false FY2024 source-conflict table and reconciled the rounded CFO testimony to the
+  exact Eskom FY2024/FY2025 values.
+- Replaced the three-point arrears history with the official FY2015–FY2026 series.
+- Upgraded the FY2027/28 ERTSA consultation status to NERSA's official 2 September 2026 source.
+
+### Engineering
+
+- Made SQLite the canonical Power BI data source through five validated semantic export views.
+- Reordered the build to database → QA → Power BI, blocking artifact generation on failed checks.
+- Replaced fixed DAX comparators, dates and tariff-rate literals with dynamic period/table logic.
+- Established one measure catalog that generates TMDL and the DAX review export.
+- Expanded build-time checks from 11 to 17 and added regression tests for the full debt series,
+  programme scope, semantic lineage, generator literals and measure-catalog parity.
+- Added Ruff lint/format gates and clean deterministic double-build checks to CI.
+- Completed the MIT license text and named the copyright holder.
+- Raised the generated Tabular compatibility level from 1600 to 1606 after Power BI Desktop
+  2.157.1354.0 reported an illegal compatibility downgrade; added regression coverage.
+- Renamed reserved DAX variables (`Path` and `FirstDate`) after live-engine metadata exposed both
+  parser failures; all 34 measures now compile and execute in Desktop.
+- Made semantic-model generation remove stale Desktop local-date and legacy-role artifacts before
+  rebuilding, with auto time intelligence disabled for deterministic source control.
+
+### Documentation and Power BI
+
+- Regenerated the five-page PBIR/TMDL project and source-driven SVG preview.
+- Reconciled the report, README, data model, KPI dictionary, limitations, audit, scorecard and
+  runbook with the corrected source scopes and architecture.
+- Added `docs/release_manifest.md` as the final auditable release record.
+- Recorded live Desktop engine results for all headline measures and semantic-table row counts.
+
 ## [SVG preview repair] - 2026-09-07
 
 - Escaped the ampersand in the generated dashboard preview so GitHub can render the SVG.

@@ -45,13 +45,36 @@ SELECT
     prior_year_arrears,
     yoy_change_rand,
     yoy_growth_pct,
-    CASE
-        WHEN n_years_available < 5 THEN
-            'CAGR not calculated: fewer than 5 comparable annual points available (n=' || n_years_available || '). See docs/limitations.md Data Gap #4.'
-        ELSE 'CAGR calculable -- see rolling window below'
-    END AS cagr_data_sufficiency_flag
+    CASE WHEN n_years_available >= 2 THEN 'CAGR available' ELSE 'Insufficient history' END
+        AS cagr_data_sufficiency_flag
 FROM yoy
 ORDER BY fiscal_year_label;
+
+-- Long-run CAGR is derived from the first and latest comparable year-end
+-- observations; no historical value or comparator is hand-entered here.
+WITH annual AS (
+    SELECT d.fiscal_year, f.gross_arrears_rand
+    FROM fact_municipal_debt f
+    JOIN dim_date d USING (date_key)
+    WHERE f.municipality_key = 0 AND d.is_fiscal_year_end = TRUE
+), bounds AS (
+    SELECT MIN(fiscal_year) AS first_year, MAX(fiscal_year) AS last_year FROM annual
+)
+SELECT
+    first_year,
+    last_year,
+    first_value,
+    last_value,
+    ROUND(100.0 * (POWER(last_value / first_value, 1.0 / (last_year - first_year)) - 1), 2)
+        AS long_run_cagr_pct
+FROM (
+    SELECT b.first_year, b.last_year,
+           f.gross_arrears_rand AS first_value,
+           l.gross_arrears_rand AS last_value
+    FROM bounds b
+    JOIN annual f ON f.fiscal_year = b.first_year
+    JOIN annual l ON l.fiscal_year = b.last_year
+);
 
 -- ----------------------------------------------------------------------------
 -- Debt-growth waterfall components (unchanged in intent from Phase 1, updated

@@ -15,18 +15,56 @@ table MeasureCatalog
 		formatString: R0.0,,,bn
 		displayFolder: Municipal Debt
 
-	/// Latest governed fiscal-year-end balance: R111.6bn; intentionally unaffected by period slicers.
-	measure 'Latest Year-End Municipal Arrears' = CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ), FactMetric[Metric] = "Municipal Arrears - Year End", FactMetric[PeriodKey] = 20260331 )
+	/// Latest governed fiscal-year-end balance selected dynamically.
+	measure 'Latest Year-End Municipal Arrears' = ```
+		VAR LatestPeriod =
+		    MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Municipal Arrears - Year End" ), FactMetric[PeriodKey] )
+		RETURN
+		    CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ),
+		        FactMetric[Metric] = "Municipal Arrears - Year End", FactMetric[PeriodKey] = LatestPeriod )
+	```
 		formatString: R0.0,,,bn
 		displayFolder: Municipal Debt
 
-	/// Latest in-year observation: R119.9bn at June 2026; kept separate from year-end.
-	measure 'Latest In-Year Municipal Arrears' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Municipal Arrears - In Year" )
+	/// Immediate prior fiscal-year-end comparator selected dynamically.
+	measure 'Prior Year-End Municipal Arrears' = ```
+		VAR LatestPeriod =
+		    MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Municipal Arrears - Year End" ), FactMetric[PeriodKey] )
+		VAR PriorPeriod =
+		    MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Municipal Arrears - Year End" && FactMetric[PeriodKey] < LatestPeriod ), FactMetric[PeriodKey] )
+		RETURN
+		    CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ),
+		        FactMetric[Metric] = "Municipal Arrears - Year End", FactMetric[PeriodKey] = PriorPeriod )
+	```
 		formatString: R0.0,,,bn
 		displayFolder: Municipal Debt
 
-	/// FY2026 year-end change against the governed FY2025 comparator.
-	measure 'Municipal Arrears YoY %' = DIVIDE ( [Latest Year-End Municipal Arrears] - 94600000000, 94600000000 )
+	/// Latest governed in-year balance, kept separate from year-end.
+	measure 'Latest In-Year Municipal Arrears' = ```
+		VAR LatestPeriod =
+		    MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Municipal Arrears - In Year" ), FactMetric[PeriodKey] )
+		RETURN
+		    CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ),
+		        FactMetric[Metric] = "Municipal Arrears - In Year", FactMetric[PeriodKey] = LatestPeriod )
+	```
+		formatString: R0.0,,,bn
+		displayFolder: Municipal Debt
+
+	/// Latest year-end change against the dynamically selected prior year-end.
+	measure 'Municipal Arrears YoY %' = DIVIDE ( [Latest Year-End Municipal Arrears] - [Prior Year-End Municipal Arrears], [Prior Year-End Municipal Arrears] )
+		formatString: 0.0%
+		displayFolder: Municipal Debt
+
+	/// CAGR from the earliest to latest comparable fiscal-year-end observation.
+	measure 'Municipal Arrears Long-Run CAGR' = ```
+		VAR DebtRows = FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Municipal Arrears - Year End" )
+		VAR EarliestDebtDate = MINX ( DebtRows, RELATED ( DimPeriod[EffectiveDate] ) )
+		VAR LatestDebtDate = MAXX ( DebtRows, RELATED ( DimPeriod[EffectiveDate] ) )
+		VAR EarliestDebtValue = MAXX ( FILTER ( DebtRows, RELATED ( DimPeriod[EffectiveDate] ) = EarliestDebtDate ), FactMetric[Value] )
+		VAR LatestDebtValue = MAXX ( FILTER ( DebtRows, RELATED ( DimPeriod[EffectiveDate] ) = LatestDebtDate ), FactMetric[Value] )
+		VAR ElapsedYears = DATEDIFF ( EarliestDebtDate, LatestDebtDate, YEAR )
+		RETURN IF ( ElapsedYears > 0, POWER ( DIVIDE ( LatestDebtValue, EarliestDebtValue ), DIVIDE ( 1, ElapsedYears ) ) - 1 )
+	```
 		formatString: 0.0%
 		displayFolder: Municipal Debt
 
@@ -45,13 +83,32 @@ table MeasureCatalog
 		formatString: 0.0 TWh
 		displayFolder: Operations
 
-	/// Latest reported annual sales: 178 TWh; intentionally unaffected by period slicers.
-	measure 'Latest Electricity Sales' = CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ), FactMetric[Metric] = "Electricity Sales", FactMetric[PeriodKey] = 20260331 )
+	/// Latest reported annual sales selected dynamically.
+	measure 'Latest Electricity Sales' = ```
+		VAR LatestPeriod =
+		    MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Electricity Sales" ), FactMetric[PeriodKey] )
+		RETURN
+		    CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ),
+		        FactMetric[Metric] = "Electricity Sales", FactMetric[PeriodKey] = LatestPeriod )
+	```
 		formatString: 0.0 TWh
 		displayFolder: Operations
 
-	/// FY2026 sales change versus FY2025.
-	measure 'Sales YoY %' = DIVIDE ( [Latest Electricity Sales] - 189.7, 189.7 )
+	/// Immediate prior reported annual sales selected dynamically.
+	measure 'Prior Electricity Sales' = ```
+		VAR LatestPeriod =
+		    MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Electricity Sales" ), FactMetric[PeriodKey] )
+		VAR PriorPeriod =
+		    MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Electricity Sales" && FactMetric[PeriodKey] < LatestPeriod ), FactMetric[PeriodKey] )
+		RETURN
+		    CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ),
+		        FactMetric[Metric] = "Electricity Sales", FactMetric[PeriodKey] = PriorPeriod )
+	```
+		formatString: 0.0 TWh
+		displayFolder: Operations
+
+	/// Latest sales change against the dynamically selected prior annual observation.
+	measure 'Sales YoY %' = DIVIDE ( [Latest Electricity Sales] - [Prior Electricity Sales], [Prior Electricity Sales] )
 		formatString: 0.0%
 		displayFolder: Operations
 
@@ -60,33 +117,47 @@ table MeasureCatalog
 		formatString: 0.00%
 		displayFolder: Operations
 
-	/// Latest reported EAF: 65.16%; intentionally unaffected by period slicers.
-	measure 'Latest EAF' = DIVIDE ( CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ), FactMetric[Metric] = "Energy Availability Factor", FactMetric[PeriodKey] = 20260331 ), 100 )
+	/// Latest reported EAF selected dynamically.
+	measure 'Latest EAF' = ```
+		VAR LatestPeriod = MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Energy Availability Factor" ), FactMetric[PeriodKey] )
+		VAR LatestValue = CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ), FactMetric[Metric] = "Energy Availability Factor", FactMetric[PeriodKey] = LatestPeriod )
+		RETURN DIVIDE ( LatestValue, 100 )
+	```
 		formatString: 0.00%
 		displayFolder: Operations
 
-	/// Percentage-point change versus FY2025.
-	measure 'EAF Change pp' = 100 * [Latest EAF] - 60.6
+	/// Immediate prior reported EAF selected dynamically.
+	measure 'Prior EAF' = ```
+		VAR LatestPeriod = MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Energy Availability Factor" ), FactMetric[PeriodKey] )
+		VAR PriorPeriod = MAXX ( FILTER ( ALL ( FactMetric ), FactMetric[Metric] = "Energy Availability Factor" && FactMetric[PeriodKey] < LatestPeriod ), FactMetric[PeriodKey] )
+		VAR PriorValue = CALCULATE ( MAX ( FactMetric[Value] ), REMOVEFILTERS ( DimPeriod ), FactMetric[Metric] = "Energy Availability Factor", FactMetric[PeriodKey] = PriorPeriod )
+		RETURN DIVIDE ( PriorValue, 100 )
+	```
+		formatString: 0.00%
+		displayFolder: Operations
+
+	/// Percentage-point change against the dynamically selected prior observation.
+	measure 'EAF Change pp' = 100 * ( [Latest EAF] - [Prior EAF] )
 		formatString: 0.00 pp
 		displayFolder: Operations
 
-	/// Reported FY2026 net profit after tax.
+	/// Latest reported net profit after tax.
 	measure 'Net Profit After Tax' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Net Profit After Tax" )
 		formatString: R0.0,,,bn
 		displayFolder: Financial
 
-	/// FY2026 electricity revenue; secondary, corroborated evidence.
+	/// Latest governed electricity revenue observation.
 	measure 'Electricity Revenue' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Electricity Revenue" )
 		formatString: R0.0,,,bn
 		displayFolder: Financial
 
 	/// Aggregate physical-security losses, not coal-specific.
-	measure 'Security Losses' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Security Losses" )
+	measure 'Security Losses' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Estimated Financial Loss" )
 		formatString: R0.0,,m
 		displayFolder: Security
 
 	/// Aggregate physical-security recoveries, not coal-specific.
-	measure 'Security Recoveries' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Security Recoveries" )
+	measure 'Security Recoveries' = CALCULATE ( MAX ( FactMetric[Value] ), FactMetric[Metric] = "Recoveries" )
 		formatString: R0.0,,m
 		displayFolder: Security
 
@@ -115,28 +186,28 @@ table MeasureCatalog
 		formatString: 0.00%
 		displayFolder: Tariff
 
-	/// Implemented average direct-customer increase from 1 April 2026.
-	measure 'FY2026/27 Direct Increase' = DIVIDE ( CALCULATE ( MAX ( FactTariff[IncreasePct] ), FactTariff[CustomerGroup] = "Direct customers - average", FactTariff[FiscalYear] = "FY2026/27" ), 100 )
+	/// Latest implemented average direct-customer increase selected dynamically.
+	measure 'FY2026/27 Direct Increase' = DIVIDE ( MAXX ( TOPN ( 1, FILTER ( ALL ( FactTariff ), FactTariff[CustomerGroup] = "Direct customers - average" ), FactTariff[EffectiveDate], DESC ), FactTariff[IncreasePct] ), 100 )
 		formatString: 0.00%
 		displayFolder: Tariff
 
-	/// Implemented average municipal bulk increase from 1 July 2026.
-	measure 'FY2026/27 Municipal Increase' = DIVIDE ( CALCULATE ( MAX ( FactTariff[IncreasePct] ), FactTariff[CustomerGroup] = "Municipal bulk purchases" ), 100 )
+	/// Latest implemented average municipal bulk increase selected dynamically.
+	measure 'FY2026/27 Municipal Increase' = DIVIDE ( MAXX ( TOPN ( 1, FILTER ( ALL ( FactTariff ), FactTariff[CustomerGroup] = "Municipal bulk purchases" ), FactTariff[EffectiveDate], DESC ), FactTariff[IncreasePct] ), 100 )
 		formatString: 0.00%
 		displayFolder: Tariff
 
-	/// FY2027/28 average path; detailed retail structure remained under consultation at 4 September 2026.
-	measure 'FY2027/28 Average Increase' = DIVIDE ( CALCULATE ( MAX ( FactTariff[IncreasePct] ), FactTariff[CustomerGroup] = "Average price path" ), 100 )
+	/// Latest average price/revenue path; detailed ERTSA structure is a separate regulatory status.
+	measure 'FY2027/28 Average Increase' = DIVIDE ( MAXX ( TOPN ( 1, FILTER ( ALL ( FactTariff ), FactTariff[CustomerGroup] = "Average price path" ), FactTariff[EffectiveDate], DESC ), FactTariff[IncreasePct] ), 100 )
 		formatString: 0.00%
 		displayFolder: Tariff
 
-	/// Mathematical index from the three average paths, baseline 100; not a customer bill forecast.
-	measure 'Illustrative Tariff Index' = 100 * ( 1 + 0.1274 ) * ( 1 + 0.0876 ) * ( 1 + 0.0883 )
+	/// Dynamic index of published direct-customer/average paths, baseline 100; not a customer bill forecast.
+	measure 'Illustrative Tariff Index' = VAR TariffRows = FILTER ( ALL ( FactTariff ), FactTariff[CustomerGroup] IN { "Direct customers - average", "Average price path" } ) RETURN 100 * PRODUCTX ( TariffRows, 1 + DIVIDE ( FactTariff[IncreasePct], 100 ) )
 		formatString: 0.0
 		displayFolder: Tariff
 
-	/// Regulatory status label, not a claim of final customer-category tariffs.
-	measure 'Tariff Consultation Status' = "8.83% average path | retail structure under consultation at 04 Sep 2026"
+	/// Latest regulatory status from the governed tariff table.
+	measure 'Tariff Consultation Status' = MAXX ( TOPN ( 1, FILTER ( ALL ( FactTariff ), FactTariff[CustomerGroup] = "Average price path" ), FactTariff[EffectiveDate], DESC ), FactTariff[RegulatoryStatus] )
 		formatString: General
 		displayFolder: Tariff
 
@@ -150,8 +221,8 @@ table MeasureCatalog
 		formatString: #,0
 		displayFolder: Governance
 
-	/// Latest reported evidence date excluding scenario horizons.
-	measure 'Latest Evidence Date' = FORMAT ( MAX ( SourceRegister[PublicationDate] ), "dd mmm yyyy" )
+	/// Latest non-scenario, non-superseded evidence date selected from the source register.
+	measure 'Latest Evidence Date' = VAR LatestDate = CALCULATE ( MAX ( SourceRegister[PublicationDate] ), FILTER ( ALL ( SourceRegister ), LEFT ( SourceRegister[EvidenceType], 8 ) <> "SCENARIO" && NOT CONTAINSSTRING ( SourceRegister[VerificationStatus], "Superseded" ) ) ) RETURN FORMAT ( LatestDate, "dd mmm yyyy" )
 		formatString: General
 		displayFolder: Governance
 

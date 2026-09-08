@@ -59,3 +59,32 @@ SELECT e.*
 FROM fact_security_case_event e
 LEFT JOIN dim_legal_status s ON e.legal_status_key = s.legal_status_key
 WHERE s.legal_status_key IS NULL;
+
+-- 10. Canonical annual debt series must span FY2015-FY2026 with 12 rows.
+SELECT 'invalid annual debt series shape' AS violation
+WHERE (
+    SELECT COUNT(*)
+    FROM fact_municipal_debt f JOIN dim_date d USING (date_key)
+    WHERE f.municipality_key = 0 AND d.is_fiscal_year_end = TRUE
+) <> 12;
+
+-- 11. FY2024 total arrears is R74.4bn; R55.3bn must not appear in total actuals.
+SELECT * FROM fact_municipal_debt
+WHERE municipality_key = 0
+  AND ((date_key = 20240331 AND gross_arrears_rand <> 74400000000)
+       OR gross_arrears_rand = 55300000000);
+
+-- 12. The R55.3bn programme scope must remain in its dedicated table.
+SELECT * FROM fact_municipal_debt_relief_programme
+WHERE approved_legacy_debt_rand <> 55300000000
+   OR approved_municipalities <> 71;
+
+-- 13. Every Power BI metric observation must resolve to a governed source.
+SELECT p.*
+FROM vw_powerbi_metric p
+LEFT JOIN stg_data_source_register s ON p.SourceDatasetId = s.dataset_id
+WHERE s.dataset_id IS NULL;
+
+-- 14. Tariff rows require separate numeric-value and regulatory-status lineage.
+SELECT * FROM fact_tariff_adjustment
+WHERE source_dataset_id IS NULL OR status_source_dataset_id IS NULL;

@@ -1,155 +1,83 @@
-# Technical Audit - Repository Review and Release Remediation
+# Final Technical Audit
 
-**Auditor:** self-review, applying the P0–P3 severity scheme requested for this remediation pass.
-**Scope:** every file in the Phase 1 delivery.
-**Method:** re-read every file against its own stated intent, re-executed all SQL, checked source
-classification against the actual originating organisation of each URL.
+**Scope:** repository data, sources, SQL, Python, DAX, PBIP/PBIR/TMDL, visuals, documentation,
+licensing, CI and local runtime behavior.
+**Severity:** P0 factual/data-integrity; P1 materially misleading; P2 engineering quality;
+P3 documentation/polish.
 
-Severity: **P0** = factual/data-integrity defect. **P1** = could materially mislead an executive or
-hiring manager. **P2** = professional-quality improvement. **P3** = cosmetic/documentation.
+## Findings and dispositions
 
----
+| ID | Severity | Finding | Disposition |
+|---|---|---|---|
+| FA-01 | P0 | FY2024 total municipal arrears incorrectly shown as R55.3bn | Fixed: official Eskom value R74.4bn |
+| FA-02 | P0 | R55.3bn and ~R74bn presented as an unresolved source conflict | Fixed: R55.3bn is programme-approved legacy debt; scopes separated |
+| FA-03 | P0 | Only three annual debt points; growth history and CAGR suppressed | Fixed: official FY2015–FY2026 series; dynamic CAGR |
+| FA-04 | P0 | PBIP generator duplicated facts already present in SQL | Fixed: generator reads validated `vw_powerbi_*` SQLite views |
+| FA-05 | P0 | DAX embedded fixed latest dates and prior values | Fixed: latest/prior period resolution is dynamic |
+| FA-06 | P0 | Tariff index embedded decimal rate literals | Fixed: `PRODUCTX` over governed tariff rows |
+| FA-07 | P1 | Secondary source used for current NERSA consultation status | Fixed: upgraded to NERSA's official 2 Sep 2026 consultation document |
+| FA-08 | P1 | Report freshness asserted a literal date | Fixed: compared to source-derived maximum eligible publication date |
+| FA-09 | P1 | EAF values duplicated in a reporting-query CTE | Fixed: dedicated canonical corporate metric fact |
+| FA-10 | P1 | Generated DAX could drift from TMDL measure definitions | Fixed: one measure catalog emits both artifacts |
+| FA-11 | P1 | Power BI Desktop local metadata appeared as uncommitted changes | Preserved in `stash@{0}`; generator outputs rebuilt independently |
+| FA-12 | P2 | CI did not enforce lint, format or clean deterministic rebuild | Fixed: Ruff plus two clean-build gates |
+| FA-13 | P2 | Incomplete MIT warranty/liability text and unnamed holder | Fixed |
+| FA-14 | P2 | Docs and preview retained obsolete conflict/release-candidate wording | Fixed |
+| FA-15 | P0 | Desktop rejected a generated 1600 model as a downgrade from engine level 1606 | Fixed: generator and regression test require 1606 |
+| FA-16 | P0 | Desktop marked two measures invalid because `Path` and `FirstDate` are reserved DAX identifiers | Fixed: collision-free variable names; all 34 live measure states valid |
 
-## P0 — Factual / data-integrity defects
+## Canonical data boundary
 
-**P0-1. Secondary press URLs classified `A-Primary` in `data_source_register.csv`.**
-DS002, DS004, DS005, DS011, DS023, DS024, DS025 all cite `dailymaverick.co.za`, `techcentral.co.za`,
-`riotimesonline.com`, `ecofinagency.com` as the `source_url`, yet several were rated
-`A-Primary` on the reasoning that "the underlying information originated from Eskom." This
-conflates **originating entity** with **publishing entity**. A Daily Maverick paraphrase of a
-results-presentation Q&A is not the same evidentiary weight as eskom.co.za's own press release,
-even when the number is accurate. **Fix:** rebuilt register (Step 2 below) separates
-`originating_entity`, `source_publisher`, and `source_tier` (A1/A2/B/C/UNVERIFIED) as distinct
-columns, and every row has been individually re-rated.
+Business values are authored in governed SQL facts and traced to `docs/data_source_register.csv`.
+`sql/15_semantic_exports.sql` exposes a stable interface to Power BI:
 
-**P0-2. `fact_security_case_log` reuses one broad source (DS019, the Sunday Times investigator-
-tender article) as the `source_dataset_id` for three unrelated individual cases** (Camden fuel-oil
-theft, Tutuka dome-valve theft, and the NATJOINTS R1.09m case cluster) — none of which the tender
-article actually reports. The Camden and Tutuka cases were sourced from separate Eskom press
-releases in the original research but the file shipped citing the wrong ID. This is a genuine
-provenance error: a reviewer clicking through DS019 would not find the case described. **Fix:**
-each case now gets its own dataset ID resolving to the actual press release it came from.
+- `vw_powerbi_period`
+- `vw_powerbi_metric`
+- `vw_powerbi_tariff`
+- `vw_powerbi_scenario`
+- `vw_powerbi_source`
 
-**P0-3. `Total Municipal Debt` DAX measure sums `gross_arrears_rand` with no date qualifier beyond
-`municipality_key = 0`.** Because `fact_municipal_debt` legitimately holds three group-total rows
-for FY2026 alone (FY2025 year-end, FY2026 year-end, June-2026 management disclosure), an
-unfiltered card using this measure in Power BI would return R94.6bn + R111.6bn + R119.9bn =
-**R326.1bn** — a meaningless sum of three point-in-time stock balances presented as if it were one
-current figure. This is exactly the "sum of point-in-time balances shown as current balance"
-failure mode data-quality tests are supposed to catch, and the original test suite did not catch
-it because it tested row-level integrity, not measure-level aggregation behaviour. **Fix:** replaced
-with `Latest Reported Municipal Debt`, filtered to the single most recent non-scenario
-`is_fiscal_year_end`-appropriate observation.
+The build order is deliberately one-way:
 
-**P0-4. `Data As Of Label` DAX measure uses `MAX(dim_date[calendar_date])` over a dimension that
-contains a 2031 scenario date.** As shipped, any visual touching `dim_date` without an explicit
-scenario exclusion would display "Data as of 31 March 2031" — actively wrong, and the exact failure
-mode Step 9 of this brief calls out by name. **Fix:** scenario dates isolated (see P0-5), and a new
-`fact_source_refresh` structure drives the freshness label instead of a raw `MAX()` over the date
-dimension.
+```text
+source register + SQL -> SQLite -> release-blocking QA -> PBIP/PBIR/TMDL/DAX/SVG
+```
 
-**P0-5. Scenario rows are not physically isolated from the fact table they share with actuals.**
-`fact_municipal_debt` carries the FY2031 R358bn scenario row with only an `is_scenario` boolean
-flag as protection. Every measure and every ad hoc query must remember to filter it out; nothing
-in the schema prevents a future contributor (or a careless DAX `SUM`) from including it. **Fix:**
-scenario observations moved to a dedicated `fact_municipal_debt_scenario` table with no shared grain
-that a naive `SUM` could accidentally aggregate into.
+If any data-quality check fails, Power BI generation is skipped. This prevents a polished artifact
+from being regenerated from invalid analytical data.
 
-## P1 — Could materially mislead an executive or hiring manager
+## Data invariants
 
-**P1-1. `fact_security_incidents` attributes five distinct metrics (incidents, losses, arrests,
-recoveries, convictions) — each independently disclosed in the same Eskom press release — to a
-single `source_dataset_id` (DS014) via five separate columns on one row.** This works today because
-all five happen to come from one release, but it hides the fact that these are five separate
-observations, not one, and doesn't generalise (e.g. if a future refresh gets losses from a
-different disclosure than arrests). **Fix:** decomposed into `fact_security_metric` at
-(reporting_date × incident_scope × metric_key × location_key) grain, one observation per row, each
-carrying its own `source_dataset_id`.
+The release enforces these invariants in executable checks and tests:
 
-**P1-2. `fact_security_case_log.legal_status` contains the value `'Mixed (Arrest+Conviction,
-aggregated across cases)'`** — exactly the kind of non-atomic, ambiguous legal-state string this
-remediation brief calls out as unacceptable. It also aggregates multiple cases into one row,
-destroying case-level traceability. **Fix:** `dim_legal_status` created with a controlled vocabulary
-(Allegation/Investigation/Arrest/Charge/Conviction/Sentence/Case Closed); the aggregated NATJOINTS
-row split into what can honestly be represented (a metric-level observation, not a case) and moved
-out of the case log entirely — see Step 3 detail below.
+- the annual municipal series has exactly 12 points from FY2015 through FY2026;
+- FY2024 total arrears equals R74.4bn;
+- R55.3bn exists in the debt-relief programme table and nowhere in the total-arrears fact;
+- scenarios never enter actuals or freshness;
+- every semantic metric resolves to a registered source;
+- point-in-time stock measures use latest/prior rows rather than historical sums;
+- tariff values and regulatory status have separate lineage;
+- the PBIP generator contains none of the retired value/date literals;
+- all report JSON is valid, visual fields resolve, and visuals remain on-canvas without overlap;
+- no local user path, credential assignment or PBIX binary is committed.
 
-**P1-3. `docs/data_model.md` describes `FactMunicipalDebt` status semantics ("Delinquent") as if a
-single group-total row can meaningfully carry one operational status label.** A R111.6bn group
-total is not "delinquent" in the same operational sense a single named municipality is — it's an
-aggregate exposure figure. The documented grain also doesn't mention the June-2026 non-year-end
-disclosure point as a distinct observation type. **Fix:** grain documentation rewritten (Step 7)
-with explicit `observation_type` (Year-End Reported / In-Year Management Disclosure / Event-Driven
-Settlement) replacing the misleading single `status` field at group-total grain.
+## Power BI audit
 
-**P1-4. Report language included editorial framing** — "the classic 'sell less, charge more'
-pattern utilities fall into" — which is an unattributed generalisation, not a sourced claim.
-**Fix:** rewritten in neutral evidence-led language per Step 18.
+The report remains intentionally compact: five pages, six KPI cards per page, two to four charts,
+lineage tables where decision context requires them, persistent interpretation footers, and a
+single corporate theme. The full 12-year debt trend now fits the Municipal Debt and Executive
+Overview line charts without changing visual binding contracts.
 
-**P1-5. The original report's single recommendation (Section 9) did not follow the structured
-recommendation framework** (problem/evidence/mechanism/impact direction/difficulty/dependencies/
-risk/owner/horizon/KPI/data required/confidence) requested in the original brief and repeated here.
-**Fix:** rebuilt as a structured table per Step 17, still limited to what current evidence
-actually supports (i.e. still short — the honest constraint hasn't changed, only the structure).
+The semantic model has six visible functional tables and three single-direction period
+relationships. Scenario data remains physically separate. Auto-recovery is enabled; local `.pbi`
+state, `.platform` metadata and `.pbix` binaries are ignored.
 
-## P2 — Professional-quality improvements
+The current runtime result is recorded in `docs/POWER_BI_RUNBOOK.md`: Desktop 2.157.1354.0 opened
+the final generated model, all 34 measures compiled, and a live DAX query returned the expected
+headline values and row counts. This does not replace final human visual/accessibility review at
+the target display size.
 
-- `sql/06_fact_municipal_debt.sql` mixed `ALTER TABLE` (adding `is_scenario`) into the middle of a
-  seed script and mixed dimension inserts (the FY2031 scenario date) into a fact script — not
-  idempotent, and violates separation of concerns Step 6 flags explicitly. Fixed: dimension inserts
-  moved to the dimension layer; scripts rewritten with `IF NOT EXISTS` guards / safe re-run pattern
-  appropriate to standard SQL (documented per-statement given no single target engine is assumed).
-- `Segment Contribution %` DAX was defined against a dimension with no populated non-aggregate
-  rows, so it always returns `BLANK()` — technically not wrong, but untested and unreviewed for
-  filter-context correctness as required by Step 11. Now explicitly commented as untestable until
-  Data Gap #2 closes, with the filter-context logic reviewed and corrected (previous version did
-  not correctly strip only the segment filter — see DAX changes below).
-- `Crime Incidents YoY %` DAX summed a pre-computed YoY percentage rather than computing it from
-  levels — technically returns the right single number today (one row) but is structurally unsafe:
-  it would silently sum percentages across periods if a second period were added. Fixed.
+## Remaining limitations
 
-## P3 — Cosmetic / documentation
-
-- KPI dictionary did not consistently state expected filter behaviour per metric (Step 25
-  requirement). Being added incrementally; not yet complete for every KPI (see remaining blockers
-  in `docs/QUALITY_SCORECARD.md`).
-- No ERD image, only prose grain descriptions. A text-based ERD (Mermaid) has been added in this
-  pass; a rendered image is not.
-
----
-
-## Final release remediation - 4 September 2026
-
-The release review found two additional executable defects and corrected them:
-
-- `sql/01_source_profiling.sql` referenced a non-existent `publisher` column and used operators
-  that were incompatible with the repository's tested SQLite path.
-- `sql/02_data_quality.sql` still referenced retired Phase-1 fields and
-  `fact_security_case_log`, so it could not execute against the documented current model.
-- Fiscal-year DAX reused the global latest-debt measure. Because that measure deliberately removes
-  date filters, it could substitute the June 2026 R119.9bn snapshot for the FY2026 year-end
-  R111.6bn balance. A dedicated `Latest Fiscal Year-End Municipal Debt` measure now supplies YoY
-  and absolute-change calculations.
-
-The repository now has one declared SQLite target, a standard-library Python loader, a one-command
-build, 11 build-time checks, 27 pytest tests and a GitHub Actions workflow that compiles Python,
-builds the database and source-controlled Power BI Project, executes every SQL file, runs tests and
-verifies generated outputs. Phase 4 adds a 5-page enhanced PBIR report, TMDL semantic model, 30
-explicit DAX measures, 68 visuals and the qualified FY2027/28 8.83% tariff path.
-
-Power BI Desktop 2.157.1354.0 (August 2026) was used on 7 September 2026 for a live runtime audit.
-The audit surfaced two source-generator defects that structural JSON checks could not detect:
-invalid inline Power Query field-type tokens and the reserved semantic-model table name
-`Measures`. Both were corrected in the generator, covered by regression checks and retested. The
-six tables refreshed, all three relationships applied, and every visual on all five pages rendered
-without an engine or visual error.
-
-## What this audit still does not cover
-
-- Power BI Service publication and permission validation. The `.pbip` is structurally and Desktop-
-  runtime validated; no `.pbix` binary or live Service link is claimed.
-- Closure of the public-data gaps and the FY2024 arrears reconciliation item documented in
-  `docs/limitations.md`.
-- Any claim that unavailable granular security data is coal-specific.
-
-See `docs/QUALITY_SCORECARD.md` for the scored assessment against this audit.
+No P0 or P1 audit item remains open. The remaining constraints are public-data coverage and Power
+BI Service publication authority, documented in `docs/limitations.md`.

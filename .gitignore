@@ -9,6 +9,9 @@ venv/
 .env.*
 !.env.example
 *.pbix.bak
+*.pbix
+**/.pbi/
+**/.platform
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
 **/.pbi/*.lock

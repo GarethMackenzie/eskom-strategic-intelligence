@@ -8,17 +8,20 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from build_powerbi_project import main as build_powerbi_project  # noqa: E402
+
 from src.analytics.build_database import build_database  # noqa: E402
 from src.config import DATABASE_PATH, QA_SUMMARY_PATH  # noqa: E402
 from src.validation.quality import run_quality_checks, serialise_results  # noqa: E402
-from build_powerbi_project import main as build_powerbi_project  # noqa: E402
 
 
 def main() -> int:
-    power_bi = build_powerbi_project()
     connection, source_count = build_database(DATABASE_PATH)
     try:
         results = run_quality_checks(connection)
+        power_bi = (
+            build_powerbi_project(connection) if all(result.passed for result in results) else None
+        )
     finally:
         connection.close()
 

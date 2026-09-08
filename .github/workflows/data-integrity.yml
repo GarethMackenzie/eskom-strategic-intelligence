@@ -27,11 +27,23 @@ jobs:
       - name: Compile Python
         run: python -m compileall -q src scripts tests
 
+      - name: Lint Python
+        run: python -m ruff check src scripts tests
+
+      - name: Check Python formatting
+        run: python -m ruff format --check src scripts tests
+
       - name: Build analytical database and validate all SQL
         run: python scripts/build_project.py
 
       - name: Run automated tests
         run: python -m pytest -q
+
+      - name: Verify deterministic clean rebuild
+        run: |
+          git diff --exit-code
+          python scripts/build_project.py
+          git diff --exit-code
 
       - name: Confirm release outputs
         run: |

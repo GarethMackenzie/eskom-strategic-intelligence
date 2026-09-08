@@ -20,6 +20,7 @@ SCHEMA_SQL = (
     "07_fact_electricity_sales.sql",
     "08_fact_security.sql",
     "14_fact_tariff.sql",
+    "15_semantic_exports.sql",
 )
 
 REPORTING_SQL = (

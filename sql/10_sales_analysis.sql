@@ -33,11 +33,9 @@ FROM annual_sales
 ORDER BY segment_name, fiscal_year_label;
 
 -- ----------------------------------------------------------------------------
--- Structural-contradiction query: sales volume vs. plant availability (EAF).
--- Still a diagnostic (not causal) join across two independently sourced
--- series. EAF remains an illustrative CTE with literal cited values (DS012)
--- pending a dedicated fact table -- unchanged limitation from Phase 1,
--- re-confirmed as still accurate in this pass.
+-- Structural diagnostic: sales volume vs. plant availability (EAF).
+-- EAF is stored in the canonical fact_corporate_metric table built by
+-- 15_semantic_exports.sql; this query contains no duplicated business values.
 -- ----------------------------------------------------------------------------
 WITH sales AS (
     SELECT d.fiscal_year_label, s.sales_twh
@@ -45,9 +43,10 @@ WITH sales AS (
     WHERE s.segment_key = 0 AND d.is_fiscal_year_end = TRUE
 ),
 eaf AS (
-    SELECT 'FY2025' AS fiscal_year_label, 60.6 AS energy_availability_factor_pct
-    UNION ALL
-    SELECT 'FY2026', 65.16
+    SELECT d.fiscal_year_label, c.metric_value AS energy_availability_factor_pct
+    FROM fact_corporate_metric c
+    JOIN dim_date d USING (date_key)
+    WHERE c.metric_name = 'Energy Availability Factor'
 )
 SELECT s.fiscal_year_label, s.sales_twh, e.energy_availability_factor_pct,
        'Sales volume declined in the same period plant availability improved. This is a diagnostic observation, not a causal finding -- see report Section: Demand Analytics.' AS interpretive_note

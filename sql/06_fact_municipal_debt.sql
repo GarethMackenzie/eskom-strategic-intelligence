@@ -47,29 +47,22 @@ CREATE TABLE fact_municipal_debt (
 INSERT INTO fact_municipal_debt VALUES
 (20260331, 0, 111600000000.00, 3600000000.00, 1, 'FACT_REPORTED', NULL, 'DS001');
 
--- Group-total FY2025 comparator. UPDATED IN PHASE 2: Phase 1 stored this as a
--- CALCULATION_DERIVED back-solve (R111.6bn / 1.179). This pass located an
--- INDEPENDENTLY REPORTED figure for the same date (National Treasury
--- MTBPS-sourced, DS031: R94.6bn) that happens to match the back-solved value
--- almost exactly -- corroboration, not coincidence assumed. Reclassified
--- FACT_REPORTED on that basis, citing DS031 as primary support with the
--- original back-solve retained in calculation_method for transparency.
--- NOTE: a second source (DS029, PMG committee testimony) gives a materially
--- different pairing (~R74bn Mar2024 -> ~R95bn Mar2025) for adjacent dates --
--- see docs/limitations.md "Reconciliation Item" for the unresolved conflict.
--- This row uses the Treasury/MTBPS figure because it independently
--- corroborates the Eskom-disclosed growth rate; the PMG figure is retained
--- separately in fact_municipal_debt_alternate_estimate for transparency.
+-- Canonical annual series from Eskom's 22 April 2026 State of the System
+-- presentation (DS038). Values are fiscal-year-end municipal and metro arrears.
+-- FY2026 is separately corroborated by DS001. R55.3bn is not part of this
+-- series: it is the debt-relief programme's approved legacy-debt scope (DS039).
 INSERT INTO fact_municipal_debt VALUES
-(20250331, 0, 94600000000.00, NULL, 1, 'FACT_REPORTED',
- 'Corroborated by two independent methods: (1) Eskom-disclosed 17.9% YoY growth rate applied to FY2026 R111.6bn (DS001) backwards = R94.6bn; (2) National Treasury MTBPS-sourced figure for the same date (DS031) = R94.6bn. Both agree, raising confidence despite each individually being tier B/derived.',
- 'DS031');
-
--- NEW IN PHASE 2: genuine third annual point, FY2024 year-end (31 March
--- 2024), closing part of Data Gap #4. Sourced from National Treasury
--- MTBPS-reporting via DS031.
-INSERT INTO fact_municipal_debt VALUES
-(20240331, 0, 55300000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS031');
+(20150331, 0,  5000000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20160331, 0,  6000000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20170331, 0,  9400000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20180331, 0, 13600000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20190331, 0, 19900000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20200331, 0, 28000000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20210331, 0, 35300000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20220331, 0, 44800000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20230331, 0, 58500000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20240331, 0, 74400000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038'),
+(20250331, 0, 94600000000.00, NULL, 1, 'FACT_REPORTED', NULL, 'DS038');
 
 
 -- Group-total in-year management disclosure, June 2026 -- aggregate exposure,
@@ -110,29 +103,20 @@ INSERT INTO fact_municipal_debt_scenario VALUES
  'Eskom management''s stated projection absent decisive intervention (DS003, direct official release -- see data_source_register.csv). Not a project-generated projection. No underlying growth-rate model was disclosed alongside this figure, so it cannot be independently reconstructed or stress-tested; it is carried as a single terminal value, not a trajectory.',
  'DS003');
 
--- ---------------------------------------------------------------------------
--- Alternate estimate table (Phase 2 addition): holds the CONFLICTING PMG
--- committee-testimony figures for the same reporting dates as the
--- Treasury/MTBPS-sourced figures above. Deliberately NOT merged or
--- reconciled -- see docs/limitations.md "Reconciliation Item #1". A
--- reviewer/analyst can see both figures side by side rather than the
--- project silently picking a winner.
--- ---------------------------------------------------------------------------
-DROP TABLE IF EXISTS fact_municipal_debt_alternate_estimate;
-CREATE TABLE fact_municipal_debt_alternate_estimate (
-    date_key                INTEGER NOT NULL REFERENCES dim_date(date_key),
-    gross_arrears_rand        NUMERIC(18,2) NOT NULL,
-    estimate_label               VARCHAR(80) NOT NULL,
-    source_dataset_id               VARCHAR(10) NOT NULL,
-    reconciliation_note                VARCHAR(300) NOT NULL,
-    PRIMARY KEY (date_key, estimate_label)
+-- R55.3bn belongs to the Municipal Debt Relief Programme, not the annual
+-- total-arrears series. It is modelled at its own programme scope so no query
+-- can accidentally chart it as FY2024 total municipal arrears.
+DROP TABLE IF EXISTS fact_municipal_debt_relief_programme;
+CREATE TABLE fact_municipal_debt_relief_programme (
+    programme_name               VARCHAR(100) PRIMARY KEY,
+    approved_legacy_debt_rand      NUMERIC(18,2) NOT NULL,
+    approved_municipalities          INTEGER NOT NULL,
+    debt_measurement_date               DATE NOT NULL,
+    source_dataset_id                    VARCHAR(10) NOT NULL
 );
 
-INSERT INTO fact_municipal_debt_alternate_estimate VALUES
-(20240331, 74000000000.00, 'Eskom CFO PMG committee testimony (approx.)', 'DS029',
- 'Conflicts with fact_municipal_debt''s R55.3bn FY2024 figure (DS031, Treasury/MTBPS-sourced) by ~R18.7bn. Not reconciled in this pass -- see docs/limitations.md.'),
-(20250331, 95000000000.00, 'Eskom CFO PMG committee testimony (approx.)', 'DS029',
- 'Close to but not identical to fact_municipal_debt''s R94.6bn FY2025 figure (DS031) -- ~R0.4bn difference, within plausible rounding of verbal committee testimony ("approximately").');
+INSERT INTO fact_municipal_debt_relief_programme VALUES
+('Municipal Debt Relief Programme', 55300000000.00, 71, '2023-03-31', 'DS039');
 
 -- ---------------------------------------------------------------------------
 -- Provincial concentration (Phase 2 addition): PARTIALLY closes Data Gap #1

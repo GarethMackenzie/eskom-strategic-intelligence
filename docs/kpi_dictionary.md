@@ -1,113 +1,120 @@
-# KPI Dictionary (Release Review)
+# KPI Dictionary
 
-Every KPI is tagged by evidence type: **FACT_REPORTED**, **CALCULATION_DERIVED**,
-**INTERPRETATION_ONLY**, **SCENARIO_MANAGEMENT**, **SCENARIO_PROJECT**. Each entry below also
-states **expected filter behaviour** — how the measure should respond to date/segment/municipality
-slicers in Power BI — per Step 25's explicit requirement. This is new in Phase 2; Phase 1's
-dictionary did not specify filter behaviour.
+The executable measure catalog is in `scripts/build_powerbi_project.py`. It generates both TMDL
+and `powerbi/dax/measures.dax`; this document describes business behavior and interpretation.
 
----
+## Municipal debt
 
-### Latest Reported Municipal Debt
-- **Business definition:** The most recent group-total municipal arrears balance Eskom has disclosed, regardless of report-level date filters.
-- **Evidence type:** FACT_REPORTED
-- **Calculation:** `MAX(date_key)` for `municipality_key=0`, then the balance at that date. Uses `ALL(dim_date)` to deliberately ignore the report's date slicer — see Expected filter behaviour.
-- **Unit:** Rand
-- **Grain:** One observation per date_key
-- **Source:** DS001 (latest currently: DS002, R119.9bn, June 2026)
-- **Frequency:** Ad hoc (whenever Eskom discloses)
-- **Owner/stakeholder:** Group CFO / Municipal Debt Management
-- **Limitations:** Fixes the Phase-1 P0-3 bug where an unfiltered SUM returned a meaningless total of unrelated snapshots (R326.1bn in Phase 1's 3-row state; R381.4bn now with 4 rows).
-- **Expected filter behaviour:** Card visuals with NO date slicer → always shows the single latest known figure. If placed on a page WITH a date slicer, this measure still ignores it by design (that's what "Latest" means) — use `Municipal Debt at Selected Date` instead on pages where the slicer should control the value shown.
+### Latest Year-End Municipal Arrears
 
-### Municipal Debt at Selected Date
-- **Business definition:** The municipal debt balance as at whatever date context the report page/slicer provides.
-- **Evidence type:** FACT_REPORTED
-- **Calculation:** `MAX(date_key)` WITHIN the active filter context (no `ALL()` override).
-- **Expected filter behaviour:** Responds to date slicers/bookmarks. On a page with a "FY2026 year-end" bookmark active, returns R111.6bn, not R119.9bn.
-
-### Municipal Debt YoY %
-- **Type:** CALCULATION_DERIVED
-- **Formula:** `(Latest year-end balance − Prior year-end balance) / Prior year-end balance`, both restricted to `is_fiscal_year_end = TRUE` so the June-2026 in-year disclosure never enters either side of the calculation.
-- **Result:** 17.9% (FY2025→FY2026), consistent with Eskom's own disclosed rate.
-- **Expected filter behaviour:** Unaffected by municipality/segment slicers (group-total only); a year slicer changes which "current" year-end is used as the numerator.
-
-### Municipal Debt CAGR
-- **Type:** CALCULATION_DERIVED
-- **Formula:** `(Last value / First value)^(1/(years-1)) − 1` over ACTUAL (non-scenario) fiscal-year-end observations only.
-- **Data sufficiency guard:** Returns BLANK() below 5 comparable annual points. **Currently BLANK — 3 points available (FY2024, FY2025, FY2026).** Paired with `Municipal Debt Data Sufficiency Status`, which returns a human-readable explanation string.
-- **Expected filter behaviour:** Ignores date slicers (uses full available history by design); would need explicit redesign if a "CAGR over the selected window" behaviour is ever wanted.
-
-### Municipal Debt Scenario (No Intervention, FY2031)
-- **Type:** SCENARIO_MANAGEMENT
-- **Definition:** Eskom's own stated base case absent intervention.
-- **Source:** DS003 (R358bn)
-- **Expected filter behaviour:** Lives in a physically separate table (`fact_municipal_debt_scenario`); cannot be affected by any filter context touching `fact_municipal_debt`. **Must only appear on "05 | Scenario & Decision Lab" with the persistent "SCENARIO — NOT MANAGEMENT FORECAST" label.**
-
-### Latest Electricity Sales TWh / Prior-Year Electricity Sales TWh / Sales YoY %
-- **Type:** FACT_REPORTED / CALCULATION_DERIVED
-- Same LATEST-resolution pattern as the debt measures, applied to `fact_electricity_sales` at `segment_key=0`.
-- **Result:** 178 TWh (FY2026), −6.2% YoY.
-- **Expected filter behaviour:** A segment slicer would currently return BLANK for any segment other than "ALL SEGMENTS," since no non-aggregate segment rows are populated (Data Gap #2).
-
-### Revenue per kWh
-- **Type:** CALCULATION_DERIVED
-- **Formula:** `Latest revenue_rand / (Latest sales_twh × 10^9)`
-- **Result:** ≈R1.99/kWh, blended across all customer segments.
-- **Expected filter behaviour:** Do not present this figure filtered to a segment — it is only valid at the ALL-SEGMENTS grain until Data Gap #2 closes.
-
-### Segment Contribution %
-- **Type:** CALCULATION_DERIVED
-- **Formula (corrected in Phase 2 — see technical_audit.md P2):** `SUM(sales_twh) [current segment/date filter] / SUM(sales_twh) [ALL-SEGMENTS row, same date filter]`. Fixed to strip only the segment filter via `REMOVEFILTERS(dim_customer_segment)`, not the date filter.
-- **Expected filter behaviour:** Should vary correctly by segment once populated; currently returns BLANK for all segments (Data Gap #2) because there is nothing to divide.
-
-### Latest Security Estimated Loss / Latest Security Recoveries / Security Recovery Rate
-- **Type:** FACT_REPORTED / CALCULATION_DERIVED
-- **Definition:** Eskom's aggregate physical-security crime metrics — **NOT coal-specific.**
-- **Source:** DS015 (loss), DS017 (recoveries)
-- **Result:** R191m loss, R34m recoveries, ≈17.8% recovery rate, all FY2026 aggregate.
-- **Expected filter behaviour:** An `incident_type_key` slicer set to anything other than "0 — AGGREGATE" will currently return BLANK, because no category-specific metric-level rows exist (Data Gap #3). This is deliberate — it prevents a dashboard from ever showing a fabricated "coal loss" figure by falling back to the aggregate value under a coal filter.
-
-### Crime Incidents YoY %
-- **Type:** FACT_REPORTED (the percentage itself is Eskom-disclosed, not derived by this project)
-- **Fixed in Phase 2:** no longer SUMs a percentage column across periods (see technical_audit.md P2) — resolves to the single latest observation for `metric_key=1`.
-- **Expected filter behaviour:** Single value per period; a multi-year trend visual using this measure would need a matrix/line chart with `reporting_date_key` on an axis, not a SUM aggregation across years.
-
-### Data Reported As Of / Data Last Refreshed / Data Freshness Label
-- **Type:** N/A (metadata, not a business KPI)
-- **Fixed in Phase 2 (P0-4):** no longer `MAX(dim_date[calendar_date])`, which could resolve to the 2031 scenario horizon. Now sourced from `fact_source_refresh`, which structurally excludes scenario dataset IDs.
-- **Expected filter behaviour:** Should be placed in a report-wide header/footer, unaffected by page-level filters, so it always reflects the true overall freshness of the dataset regardless of what the user is currently viewing.
-
-### Estimated Excess Generation Capacity
-- **Type:** FACT_REPORTED (management estimate)
-- **Source:** DS034, direct Eskom release dated 31 August 2026.
-- **Reported value:** Estimated 2–3 GW surplus generation capacity.
-- **Usage constraint:** Contextual only. It is not modelled as a live operational KPI because no
-  dated, metered capacity series is available in this repository. Do not present it as an
-  instantaneous surplus measurement.
-
-### FY2026/27 Direct / Municipal Tariff Increases
 - **Type:** FACT_REPORTED
-- **Definition:** Implemented average increases of 8.76% for Eskom direct customers from 1 April
-  2026 and 9.01% for municipal bulk purchases from 1 July 2026.
-- **Source:** DS036 (direct Eskom implementation notice, corroborating the NERSA decision).
-- **Expected filter behaviour:** Customer-group and fiscal-year context resolves the relevant row;
-  the direct-customer measure is explicitly restricted to FY2026/27 so it cannot return the earlier
-  12.74% FY2025/26 observation.
+- **Definition:** value at the maximum period containing `Municipal Arrears - Year End`.
+- **Current value:** R111.6bn at FY2026.
+- **Behavior:** deliberately removes report period filters and resolves the latest governed annual
+  stock; it never sums balances across dates.
+
+### Prior Year-End Municipal Arrears
+
+- **Type:** FACT_REPORTED comparator
+- **Definition:** value at the maximum year-end period strictly earlier than the latest period.
+- **Current value:** R94.6bn at FY2025.
+- **Behavior:** selected dynamically; no date or value literal is embedded.
+
+### Municipal Arrears YoY %
+
+- **Type:** CALCULATION_DERIVED
+- **Formula:** `(latest year-end − prior year-end) / prior year-end`.
+- **Current result:** approximately 18.0%.
+- **Constraint:** June 2026 in-year arrears cannot enter either comparator.
+
+### Municipal Arrears Long-Run CAGR
+
+- **Type:** CALCULATION_DERIVED
+- **Formula:** `(latest / earliest)^(1 / elapsed years) − 1`.
+- **Window:** earliest and latest comparable annual rows, currently FY2015–FY2026.
+- **Behavior:** the first date, last date and elapsed years are derived from filter-safe annual data.
+
+### Latest In-Year Municipal Arrears
+
+- **Type:** FACT_REPORTED
+- **Current value:** R119.9bn at June 2026.
+- **Constraint:** kept separate from annual actuals and never substituted into YoY/CAGR.
+
+### Scenario Municipal Arrears FY2031 / Scenario Gap vs Latest
+
+- **Type:** SCENARIO_MANAGEMENT / CALCULATION_DERIVED
+- **Current scenario:** R358bn under Eskom's no-further-intervention case.
+- **Constraint:** physically isolated in `FactScenario`; not an actual and not a project forecast.
+
+## Operations and financials
+
+### Latest / Prior Electricity Sales and Sales YoY %
+
+- **Type:** FACT_REPORTED / CALCULATION_DERIVED
+- **Current values:** 178 TWh vs 189.7 TWh; approximately −6.2%.
+- **Behavior:** latest and prior periods are selected dynamically from `FactMetric`.
+- **Limitation:** aggregate only; segment analysis is not supported.
+
+### Latest / Prior EAF and EAF Change pp
+
+- **Type:** FACT_REPORTED / CALCULATION_DERIVED
+- **Current values:** 65.16% vs 60.6%; +4.56 percentage points.
+- **Behavior:** latest and prior observations are dynamically selected.
+- **Interpretation:** association with sales change is descriptive, not causal.
+
+### Net Profit After Tax / Electricity Revenue
+
+- **Type:** FACT_REPORTED
+- **Current values:** R30.3bn and R354.7bn.
+- **Evidence caveat:** the revenue row retains its secondary-source quality flag.
+
+## Physical security
+
+### Security Losses / Recoveries / Recovery Rate / Arrests / Convictions
+
+- **Type:** FACT_REPORTED / CALCULATION_DERIVED
+- **Current values:** R191m losses, R34m recoveries, 505 arrests and 13 convictions.
+- **Scope:** aggregate physical security. These measures must never be labelled coal-specific.
+- **Unit rule:** percentage-change rows are not added across periods.
+
+## Tariffs
+
+### Tariff Increase %
+
+- **Type:** FACT_REPORTED
+- **Behavior:** returns the governed average for the active tariff row.
+
+### FY2026/27 Direct / Municipal Increase
+
+- **Current values:** 8.76% direct from 1 April 2026; 9.01% municipal bulk from 1 July 2026.
+- **Behavior:** each measure finds the latest row for its customer-group type; the date/value is not
+  embedded in the expression.
 
 ### FY2027/28 Average Increase
-- **Type:** FACT_REPORTED with regulatory-status qualification
-- **Definition:** 8.83% estimated final average price impact/revenue path for FY2027/28, intended
-  from 1 April 2027. The detailed retail tariff structure and customer-category allocation were
-  under NERSA consultation as at 4 September 2026.
-- **Sources:** DS035 supports the value; DS037 records current consultation status.
-- **Usage constraint:** Do not label it a fully final tariff for every customer category. It also
-  remains subject to the RCA qualification in NERSA's settlement statement.
-- **Expected filter behaviour:** Returns only the `Average price path` tariff row.
+
+- **Current value:** 8.83% estimated average price/revenue path.
+- **Status:** detailed ERTSA structure and customer-category allocation under NERSA consultation
+  from 2 September 2026.
+- **Constraint:** not a final tariff for every customer; DS035 supports the value and DS037 the
+  consultation status.
 
 ### Illustrative Tariff Index
+
 - **Type:** CALCULATION_DERIVED
-- **Formula:** `100 × 1.1274 × 1.0876 × 1.0883`.
-- **Definition:** A baseline-100 mathematical index showing compounding of the published average
-  paths. It is not a customer bill forecast because tariffs, consumption, taxes, fixed charges and
-  customer categories differ.
+- **Formula:** baseline 100 multiplied by `PRODUCTX(1 + IncreasePct / 100)` over governed direct and
+  average-path rows.
+- **Constraint:** an arithmetic index, not a customer bill forecast. No tariff decimal is hardcoded.
+
+## Governance
+
+### Governed Source Count / Primary Source Count
+
+- **Current source count:** 40.
+- **Primary definition:** source tier A1 or A2.
+- **Behavior:** both derive directly from the embedded `SourceRegister`.
+
+### Latest Evidence Date
+
+- **Definition:** maximum publication date among non-scenario, non-superseded sources.
+- **Current result:** 2 September 2026.
+- **Constraint:** not derived from scenario dates, retrieval time or today's date.
