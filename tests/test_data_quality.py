@@ -241,6 +241,14 @@ def test_source_register_ids_unique_and_evidence_atomic():
         if row["evidence_type"] not in allowed
     ]
     assert invalid == [], f"Non-atomic/invalid evidence types: {invalid}"
+    by_id = {row["dataset_id"]: row for row in rows}
+    nersa_relief = by_id["DS025"]
+    assert nersa_relief["value"] == (
+        "87.74c/kWh for Samancor Chrome and Glencore-Merafe smelters for 12 months"
+    )
+    assert nersa_relief["source_tier"] == "A1"
+    assert nersa_relief["source_publisher"] == "National Energy Regulator of South Africa"
+    assert nersa_relief["reporting_period"] == "Effective 2026-01-01 to 2026-12-31"
     print(f"PASS: {len(rows)} unique source IDs with atomic evidence classifications")
 
 

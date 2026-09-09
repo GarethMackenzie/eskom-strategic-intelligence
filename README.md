@@ -12,6 +12,16 @@ Python build pipeline, automated QA and GitHub Actions workflow.
 **Latest non-scenario evidence: 2 September 2026.** This date is derived from the source register
 during the build. No private customer, employee or operational data is used.
 
+### v1.0.0 release-candidate status
+
+| Gate | Status |
+|---|---|
+| Automated repository QA | PASS — 17 build checks and 32 tests |
+| GitHub Actions | PENDING for this release branch; current `main` baseline passed |
+| Power BI Desktop model runtime | PASS — compatibility level 1606 |
+| Human visual/accessibility sign-off | PENDING HUMAN SIGN-OFF |
+| Power BI Service publication | Not part of the repository release |
+
 ## Dashboard preview
 
 | Executive KPI | Latest value | Evidence status |

@@ -52,6 +52,34 @@ Expected headline values:
 The 8.83% FY2027/28 average path is not a final customer-category tariff. The tariff page must retain
 the separate NERSA retail-structure consultation status and its 2 September 2026 evidence date.
 
+## Final human visual and accessibility checklist
+
+Status: **PENDING HUMAN SIGN-OFF**
+
+Inspect the generated report at its intended 1280 × 720 page size after the final release-candidate
+commit. Record reviewer, date, Desktop version and PASS/FAIL for each actual PBIR page:
+
+| Page | Page opens | Layout and text | Interactions | Evidence and values | Accessibility |
+|---|---|---|---|---|---|
+| Executive Overview | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Tariff & Affordability | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Municipal Debt | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Operations & Security | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Data Governance | ☐ | ☐ | ☐ | ☐ | ☐ |
+
+For every page, confirm:
+
+- no clipping, unwanted scrollbars, overlapping objects, unreadable text or hidden visual errors;
+- KPI formatting, units, titles and all headline values reconcile to the expected results above;
+- slicers, cross-filtering and tooltips behave correctly;
+- scenarios are visibly distinct from actuals and required source/evidence qualifiers remain visible;
+- colour does not mislead, contrast and reading order are reasonable, and the page remains usable at
+  the intended display resolution.
+
+Automated tests cover page/visual counts, JSON parsing, field and measure resolution, theme and
+PBIR/TMDL references, canvas bounds, prohibited overlaps, absolute paths and credential-like text.
+They do not complete this human checklist.
+
 ## Recorded Desktop validation
 
 Validated on 8 September 2026 in Power BI Desktop 2.157.1354.0 (August 2026):
@@ -95,5 +123,5 @@ model execution alone.
 | Python test suite | PASS — 32 tests |
 | Static PBIR structure | PASS — 5 pages, 68 visuals |
 | Power BI Desktop model runtime | PASS — 2.157.1354.0, 8 Sep 2026 |
-| Human visual/accessibility sign-off | Required before publication |
+| Human visual/accessibility sign-off | PENDING HUMAN SIGN-OFF |
 | Power BI Service publication | Requires authorised workspace selection |

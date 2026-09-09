@@ -1,14 +1,22 @@
 # Release Manifest
 
-## Identity
+## Release identity
 
-- Release: Final integrity release
-- Date: 8 September 2026
-- Branch: `codex/final-integrity-audit`
-- Baseline main commit: `2233ce630e768b1ed1cf772054d9400be318e956`
-- Preserved pre-audit Desktop state: `stash@{0}`
+- Release: v1.0.0 release candidate
+- Release date: 9 September 2026
+- Release branch: `release/v1-final-hardening`
+- Baseline main commit: `ca10118af4db78341e6656fbb2ab47e22ad8754c`
+- Release-candidate commit: assigned by Git when this manifest is committed; use the current branch
+  HEAD and the pull-request checks as the authoritative candidate identity
+- GitHub Actions: PENDING — release-branch checks run on the pull request
+- Power BI Desktop model runtime: PASS — Desktop 2.157.1354.0 on 8 September 2026
+- Human visual/accessibility inspection: PENDING HUMAN SIGN-OFF
+- Power BI Service publication: OUTSIDE REPOSITORY RELEASE SCOPE
 
-## Generated Power BI inventory
+No tag or GitHub release is created by this candidate. The proposed release tag is `v1.0.0` only
+after pull-request approval, passing CI, and recorded human visual/accessibility sign-off.
+
+## Reproducible inventory
 
 - Entry point: `EskomStrategicIntelligence.pbip`
 - PBIR pages: 5
@@ -18,43 +26,47 @@
 - Explicit measures: 34
 - Governed sources: 40
 - Canonical export views: 5
+- Tabular compatibility level: 1606
 
-## Critical facts
+## Critical facts protected
 
 - FY2024 total municipal and metro arrears: R74.4bn (DS038)
 - Municipal Debt Relief Programme approved legacy debt: R55.3bn across 71 approvals (DS039)
 - FY2026 year-end arrears: R111.6bn
 - June 2026 in-year arrears: R119.9bn, kept separate
 - FY2031 R358bn: management scenario, kept separate
-- FY2027/28 8.83%: average price/revenue path; detailed ERTSA under consultation (DS035/DS037)
+- FY2027/28 8.83%: average price/revenue path, not a final customer-category tariff
 
 ## Build contract
 
-1. Build all SQLite facts and views.
-2. Run 17 release-blocking checks.
-3. Generate TMDL, PBIR, DAX and SVG only on PASS.
-4. Run the full pytest suite.
-5. Run Ruff lint and format checks.
-6. Rebuild twice and require no tracked difference.
-7. Open this exact PBIP in Power BI Desktop and record the result in `POWER_BI_RUNBOOK.md`.
-8. Push and confirm the GitHub Actions result before declaring GitHub release status complete.
+1. Build SQLite facts and semantic export views from governed source data.
+2. Require all 17 release-blocking data checks to pass.
+3. Generate TMDL, PBIR, DAX and preview assets only after QA passes.
+4. Run all 32 pytest tests and Ruff lint/format checks.
+5. Rebuild twice and require zero tracked difference.
+6. Require passing pull-request CI.
+7. Complete and record the five-page human checklist in `POWER_BI_RUNBOOK.md`.
 
 ## Recorded runtime result
 
 Power BI Desktop 2.157.1354.0 opened the generated compatibility-level-1606 project on
 8 September 2026. All 34 measures reported a valid engine state. A live DAX query returned the
 expected headline values, 21 period rows, 29 metric rows, 4 tariff rows, 1 scenario row and 40
-source-register rows. Human visual/accessibility sign-off and Power BI Service publication remain
-separate release-owner actions.
+source-register rows. This proves model compilation and execution, not final visual or accessibility
+sign-off.
 
-## Source documents added/upgraded
+## Provenance hardening in this candidate
 
-- DS038: Eskom State of the System Winter Outlook, 22 April 2026 — canonical annual debt series.
-- DS039: National Treasury Annual Report 2023/24 — R55.3bn programme scope.
-- DS037: NERSA official FY2027/28 ERTSA consultation document — regulatory status.
+- DS002, DS004, DS005, DS007, DS010 and DS011: upgraded to the official FY2026 Eskom reporting
+  suite after checking metric, period, units and reporting scope.
+- DS025: corrected to NERSA's official 87.74c/kWh temporary ferrochrome-smelter relief for calendar
+  2026; the unsupported secondary 62c/kWh claim was removed.
+- DS027: upgraded to Eskom's direct statement.
+- DS013: official evidence confirms four load-shedding days; the 26-hour component remains clearly
+  qualified as secondary-only.
 
 ## Known boundaries
 
-Complete municipality-level arrears, segment-level electricity sales, coal-specific security data,
-long-run sales/EAF history and Power BI Service publication remain outside this release's public
-data or authorisation boundary. See `limitations.md`.
+Complete municipality-level arrears, coal-specific security metrics, long-run sales/EAF history,
+final human visual/accessibility inspection and Power BI Service publication remain outside the
+automated repository gate. See `limitations.md` and `PRIMARY_SOURCE_UPGRADE_BACKLOG.md`.

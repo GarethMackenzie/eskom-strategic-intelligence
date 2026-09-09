@@ -51,7 +51,13 @@ def test_report_has_five_ordered_pages_and_68_visuals():
         visuals = list((pages_root / page_id / "visuals").glob("*/visual.json"))
         assert len(visuals) >= 12
         visual_count += len(visuals)
-    assert len(display_names) == len(set(display_names))
+    assert display_names == [
+        "Executive Overview",
+        "Tariff & Affordability",
+        "Municipal Debt",
+        "Operations & Security",
+        "Data Governance",
+    ]
     assert visual_count == 68
 
 
