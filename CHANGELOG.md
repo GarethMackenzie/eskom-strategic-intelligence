@@ -3,8 +3,10 @@
 ## [GitHub preview fallback] - 2026-09-09
 
 - Added a 1280×720 PNG rendering of the governed SVG dashboard preview.
-- Switched the README inline preview to PNG so it does not depend on GitHub's SVG rendering proxy.
-- Added regression checks for the PNG signature, dimensions, README reference and source-SVG hash.
+- Replaced the README's inline image with a native Markdown KPI preview so it does not depend on
+  GitHub's raw-image or SVG rendering services.
+- Added regression checks for the PNG signature, dimensions, native README preview and source-SVG
+  hash.
 
 ## [Final integrity release] - 2026-09-08
 

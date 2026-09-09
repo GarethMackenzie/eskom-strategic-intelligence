@@ -12,12 +12,22 @@ Python build pipeline, automated QA and GitHub Actions workflow.
 **Latest non-scenario evidence: 2 September 2026.** This date is derived from the source register
 during the build. No private customer, employee or operational data is used.
 
-![Eskom Strategic Intelligence Power BI project preview](assets/eskom-power-bi-preview.png)
+## Dashboard preview
 
-> This labelled design preview is generated from the same validated SQLite data as the Power BI
-> model. It is not represented as a Power BI Desktop screenshot. The reviewable vector source is
-> [also available](assets/eskom-power-bi-preview.svg); the PNG is used inline to avoid GitHub's
-> SVG rendering proxy.
+| Executive KPI | Latest value | Evidence status |
+|---|---:|---|
+| Year-end municipal arrears | **R111.6bn** | FY2026 official actual |
+| Electricity sales | **178 TWh** | FY2026 official actual |
+| Energy Availability Factor | **65.16%** | FY2026 official actual |
+| Net profit after tax | **R30.3bn** | FY2026 official actual |
+| FY2027/28 average price path | **8.83%** | ERTSA structure under consultation |
+| Governed sources | **40** | Latest evidence 2 September 2026 |
+
+**Municipal arrears trend, FY2015–FY2026:** `▁▁▁▂▂▃▃▄▅▆▇█` — R5.0bn to R111.6bn.
+
+This native Markdown preview is independent of GitHub's raw-image service. The governed design
+assets remain available as [PNG](assets/eskom-power-bi-preview.png) and reviewable
+[SVG source](assets/eskom-power-bi-preview.svg); neither is represented as a Desktop screenshot.
 
 ## Critical correction in this release
 

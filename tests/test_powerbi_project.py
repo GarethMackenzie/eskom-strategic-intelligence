@@ -208,5 +208,8 @@ def test_preview_is_explicitly_not_a_runtime_screenshot():
         .strip()
     )
     assert hashlib.sha256(svg_path.read_bytes()).hexdigest() == expected_svg_hash
-    assert "assets/eskom-power-bi-preview.png" in (ROOT / "README.md").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "## Dashboard preview" in readme
+    assert "Municipal arrears trend, FY2015–FY2026" in readme
+    assert "![Eskom Strategic Intelligence Power BI project preview]" not in readme
     assert not list(ROOT.glob("*.pbix")), "No generated or fake PBIX binary may be committed"
