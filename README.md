@@ -12,10 +12,12 @@ Python build pipeline, automated QA and GitHub Actions workflow.
 **Latest non-scenario evidence: 2 September 2026.** This date is derived from the source register
 during the build. No private customer, employee or operational data is used.
 
-![Eskom Strategic Intelligence Power BI project preview](assets/eskom-power-bi-preview.svg)
+![Eskom Strategic Intelligence Power BI project preview](assets/eskom-power-bi-preview.png)
 
 > This labelled design preview is generated from the same validated SQLite data as the Power BI
-> model. It is not represented as a Power BI Desktop screenshot.
+> model. It is not represented as a Power BI Desktop screenshot. The reviewable vector source is
+> [also available](assets/eskom-power-bi-preview.svg); the PNG is used inline to avoid GitHub's
+> SVG rendering proxy.
 
 ## Critical correction in this release
 
@@ -63,7 +65,7 @@ NERSA on 2 September 2026 and are not presented as final category tariffs.
                   |
  validated semantic export views
                   |
- PBIP generator -> TMDL + PBIR + DAX + SVG
+ PBIP generator -> TMDL + PBIR + DAX + SVG + verified PNG fallback
                   |
        5-page Power BI report
 ```

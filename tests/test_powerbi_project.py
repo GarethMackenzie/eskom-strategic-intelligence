@@ -1,7 +1,9 @@
 """Structural release tests for the text-based Power BI Project."""
 
+import hashlib
 import json
 import re
+import struct
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -191,8 +193,20 @@ def test_powerbi_contains_correct_full_debt_series():
 
 
 def test_preview_is_explicitly_not_a_runtime_screenshot():
-    preview = (ROOT / "assets" / "eskom-power-bi-preview.svg").read_text(encoding="utf-8")
+    svg_path = ROOT / "assets" / "eskom-power-bi-preview.svg"
+    preview = svg_path.read_text(encoding="utf-8")
     ET.fromstring(preview)
     assert "Preview only" in preview
     assert "interactive rendering requires Power BI Desktop" in preview
+
+    png = (ROOT / "assets" / "eskom-power-bi-preview.png").read_bytes()
+    assert png[:8] == b"\x89PNG\r\n\x1a\n"
+    assert struct.unpack(">II", png[16:24]) == (1280, 720)
+    expected_svg_hash = (
+        (ROOT / "assets" / "eskom-power-bi-preview.png.source-sha256")
+        .read_text(encoding="ascii")
+        .strip()
+    )
+    assert hashlib.sha256(svg_path.read_bytes()).hexdigest() == expected_svg_hash
+    assert "assets/eskom-power-bi-preview.png" in (ROOT / "README.md").read_text(encoding="utf-8")
     assert not list(ROOT.glob("*.pbix")), "No generated or fake PBIX binary may be committed"
