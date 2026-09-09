@@ -8,13 +8,18 @@
 - Baseline main commit: `ca10118af4db78341e6656fbb2ab47e22ad8754c`
 - Release-candidate commit: assigned by Git when this manifest is committed; use the current branch
   HEAD and the pull-request checks as the authoritative candidate identity
-- GitHub Actions: PENDING — release-branch checks run on the pull request
+- GitHub Actions: PASS — pull request #1 release-candidate checks
 - Power BI Desktop model runtime: PASS — Desktop 2.157.1354.0 on 8 September 2026
 - Human visual/accessibility inspection: PENDING HUMAN SIGN-OFF
 - Power BI Service publication: OUTSIDE REPOSITORY RELEASE SCOPE
 
 No tag or GitHub release is created by this candidate. The proposed release tag is `v1.0.0` only
 after pull-request approval, passing CI, and recorded human visual/accessibility sign-off.
+
+GitHub repository metadata was checked on 9 September 2026. All 14 approved discovery topics are
+present. The root `LICENSE` remains canonical MIT text, although GitHub's external metadata endpoint
+currently reports `Other` / `NOASSERTION`; the valid legal text was not altered to influence the
+detector.
 
 ## Reproducible inventory
 

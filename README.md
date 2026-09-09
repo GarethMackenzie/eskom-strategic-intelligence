@@ -17,7 +17,7 @@ during the build. No private customer, employee or operational data is used.
 | Gate | Status |
 |---|---|
 | Automated repository QA | PASS — 17 build checks and 32 tests |
-| GitHub Actions | PENDING for this release branch; current `main` baseline passed |
+| GitHub Actions | PASS — pull request #1 release-candidate checks |
 | Power BI Desktop model runtime | PASS — compatibility level 1606 |
 | Human visual/accessibility sign-off | PENDING HUMAN SIGN-OFF |
 | Power BI Service publication | Not part of the repository release |

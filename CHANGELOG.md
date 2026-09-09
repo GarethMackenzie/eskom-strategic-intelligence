@@ -23,7 +23,9 @@
 - Ruff lint and format checks PASS.
 - Power BI Desktop model runtime PASS (2.157.1354.0; compatibility level 1606).
 - Human visual/accessibility inspection: PENDING HUMAN SIGN-OFF.
-- GitHub Actions: pending release-branch pull-request run.
+- GitHub Actions: PASS — pull request #1 release-candidate run.
+- Added all 14 approved GitHub repository topics.
+- Verified the canonical MIT file; GitHub metadata still reports `Other` / `NOASSERTION`.
 
 ## [GitHub preview fallback] - 2026-09-09
 
