@@ -19,7 +19,7 @@ P3 documentation/polish.
 | FA-08 | P1 | Report freshness asserted a literal date | Fixed: compared to source-derived maximum eligible publication date |
 | FA-09 | P1 | EAF values duplicated in a reporting-query CTE | Fixed: dedicated canonical corporate metric fact |
 | FA-10 | P1 | Generated DAX could drift from TMDL measure definitions | Fixed: one measure catalog emits both artifacts |
-| FA-11 | P1 | Power BI Desktop local metadata appeared as uncommitted changes | Preserved in `stash@{0}`; generator outputs rebuilt independently |
+| FA-11 | P1 | Power BI Desktop local metadata appeared as uncommitted changes | Developer-local metadata was excluded; generator outputs were rebuilt independently |
 | FA-12 | P2 | CI did not enforce lint, format or clean deterministic rebuild | Fixed: Ruff plus two clean-build gates |
 | FA-13 | P2 | Incomplete MIT warranty/liability text and unnamed holder | Fixed |
 | FA-14 | P2 | Docs and preview retained obsolete conflict/release-candidate wording | Fixed |

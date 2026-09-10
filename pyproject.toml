@@ -1,6 +1,6 @@
 [project]
 name = "eskom-strategic-intelligence"
-version = "5.0.0"
+version = "1.0.0"
 description = "Source-controlled Power BI and analytics-engineering case study for Eskom strategic intelligence"
 requires-python = ">=3.11"
 

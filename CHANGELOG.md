@@ -1,5 +1,34 @@
 # Changelog
 
+## [v1.0.0 release hardening] - 2026-09-09
+
+### Release governance
+
+- Added a refreshed Power BI Desktop Executive Overview screenshot to the README through an
+  immutable CDN URL.
+- Replaced developer-local branch and stash references with a reproducible public release-candidate
+  manifest based on `ca10118af4db78341e6656fbb2ab47e22ad8754c`.
+- Confirmed the root MIT licence is canonical and complete; no legal-text rewrite was needed.
+- Upgraded eight source-register rows with official Eskom or NERSA evidence and retained secondary
+  corroboration where useful.
+- Corrected DS025 from an unsupported 62c/kWh claim to NERSA's official 87.74c/kWh temporary price
+  relief for the named ferrochrome smelters during calendar 2026.
+- Added a durable primary-source backlog for six deliberately unresolved or superseded rows.
+- Added an exact five-page human Power BI visual/accessibility checklist; sign-off remains pending.
+- Attempted the requested `analytics-release-gate` installation; PyPI returned no matching
+  distribution, so no unrelated package was substituted and no `argate` result is claimed.
+
+### Validation
+
+- 17/17 build-time checks PASS.
+- 32/32 pytest tests PASS.
+- Ruff lint and format checks PASS.
+- Power BI Desktop model runtime PASS (2.157.1354.0; compatibility level 1606).
+- Human visual/accessibility inspection: PENDING HUMAN SIGN-OFF.
+- GitHub Actions: PASS — pull request #1 release-candidate run.
+- Added all 14 approved GitHub repository topics.
+- Verified the canonical MIT file; GitHub metadata still reports `Other` / `NOASSERTION`.
+
 ## [GitHub preview fallback] - 2026-09-09
 
 - Added a 1280×720 PNG rendering of the governed SVG dashboard preview.

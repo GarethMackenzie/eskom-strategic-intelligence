@@ -12,7 +12,19 @@ Python build pipeline, automated QA and GitHub Actions workflow.
 **Latest non-scenario evidence: 2 September 2026.** This date is derived from the source register
 during the build. No private customer, employee or operational data is used.
 
+### v1.0.0 release-candidate status
+
+| Gate | Status |
+|---|---|
+| Automated repository QA | PASS — 17 build checks and 32 tests |
+| GitHub Actions | PASS — pull request #1 release-candidate checks |
+| Power BI Desktop model runtime | PASS — compatibility level 1606 |
+| Human visual/accessibility sign-off | PASS — user-confirmed final review completed |
+| Power BI Service publication | Not part of the repository release |
+
 ## Dashboard preview
+
+![Eskom Strategic Intelligence Power BI Desktop dashboard](assets/eskom-power-bi-dashboard-screenshot.png)
 
 | Executive KPI | Latest value | Evidence status |
 |---|---:|---|
@@ -24,10 +36,6 @@ during the build. No private customer, employee or operational data is used.
 | Governed sources | **40** | Latest evidence 2 September 2026 |
 
 **Municipal arrears trend, FY2015–FY2026:** `▁▁▁▂▂▃▃▄▅▆▇█` — R5.0bn to R111.6bn.
-
-This native Markdown preview is independent of GitHub's raw-image service. The governed design
-assets remain available as [PNG](assets/eskom-power-bi-preview.png) and reviewable
-[SVG source](assets/eskom-power-bi-preview.svg); neither is represented as a Desktop screenshot.
 
 ## Critical correction in this release
 

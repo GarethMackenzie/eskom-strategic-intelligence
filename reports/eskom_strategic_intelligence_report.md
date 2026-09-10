@@ -116,11 +116,11 @@ fixed-cost recovery question, which is one plausible reading of why Eskom has co
 large-customer demand initiatives described below; this is offered as one interpretation among
 others, not a proven single explanation.
 
-**[FACT — evidence-supported existing interventions]** NERSA approved concessionary pricing
-(62c/kWh) for two ferrochrome smelter operators effective June 2026, and Eskom has a separate
-agreement with Manganese Metal Company. These are Eskom's own commercial responses; this project's
-contribution is describing their observable characteristics (targeted, price-sensitive, large
-industrial loads), not originating the strategy.
+**[FACT — evidence-supported existing intervention]** NERSA approved temporary electricity price
+relief of 87.74c/kWh for Samancor Chrome and Glencore-Merafe smelters for calendar 2026. This is an
+Eskom-requested, regulator-approved commercial response; this project's contribution is describing
+its observable characteristics (targeted, price-sensitive, large industrial loads), not originating
+the strategy.
 
 ### 5.1 Tariff path and the 8.83% regulatory update
 
