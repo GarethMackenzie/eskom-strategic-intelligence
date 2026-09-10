@@ -4,8 +4,8 @@
 
 ### Release governance
 
-- Added a jsDelivr-backed README preview to bypass intermittent regional failures from GitHub's
-  raw-content image endpoint while retaining the repository-native PNG, SVG and Markdown fallback.
+- Added a refreshed Power BI Desktop Executive Overview screenshot to the README through an
+  immutable CDN URL.
 - Replaced developer-local branch and stash references with a reproducible public release-candidate
   manifest based on `ca10118af4db78341e6656fbb2ab47e22ad8754c`.
 - Confirmed the root MIT licence is canonical and complete; no legal-text rewrite was needed.

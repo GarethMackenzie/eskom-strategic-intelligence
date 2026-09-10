@@ -24,7 +24,7 @@ during the build. No private customer, employee or operational data is used.
 
 ## Dashboard preview
 
-![Eskom Strategic Intelligence dashboard preview](https://cdn.jsdelivr.net/gh/GarethMackenzie/eskom-strategic-intelligence@main/assets/eskom-power-bi-preview.png)
+![Eskom Strategic Intelligence Power BI Desktop dashboard](https://cdn.jsdelivr.net/gh/GarethMackenzie/eskom-strategic-intelligence@7072436f7f6a53257161b7f2faa5c283c86511ad/assets/eskom-power-bi-dashboard-screenshot.png)
 
 | Executive KPI | Latest value | Evidence status |
 |---|---:|---|
@@ -36,12 +36,6 @@ during the build. No private customer, employee or operational data is used.
 | Governed sources | **40** | Latest evidence 2 September 2026 |
 
 **Municipal arrears trend, FY2015–FY2026:** `▁▁▁▂▂▃▃▄▅▆▇█` — R5.0bn to R111.6bn.
-
-The embedded preview uses jsDelivr's public GitHub CDN because GitHub's raw-content endpoint can
-return regional `503 Backend.max_conn reached` errors. The native table above remains an independent
-fallback. Governed design assets remain available as [PNG](assets/eskom-power-bi-preview.png) and
-reviewable [SVG source](assets/eskom-power-bi-preview.svg); neither is represented as a Desktop
-screenshot.
 
 ## Critical correction in this release
 
