@@ -56,8 +56,9 @@ the separate NERSA retail-structure consultation status and its 2 September 2026
 
 Status: **PASS — user-confirmed final review completed**
 
-Inspect the generated report at its intended 1280 × 720 page size after the final release-candidate
-commit. Record reviewer, date, Desktop version and PASS/FAIL for each actual PBIR page:
+The final reviewed report was inspected at its intended 1280 × 720 page size. The checklist below
+records PASS/FAIL for each actual PBIR page without inventing reviewer identity, review time or a
+separate Desktop version for the human review.
 
 | Page | Page opens | Layout and text | Interactions | Evidence and values | Accessibility |
 |---|---|---|---|---|---|
