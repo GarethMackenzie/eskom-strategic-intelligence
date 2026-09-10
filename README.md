@@ -24,7 +24,9 @@ during the build. No private customer, employee or operational data is used.
 
 ## Dashboard preview
 
-![Eskom Strategic Intelligence Power BI Desktop dashboard](assets/eskom-power-bi-dashboard-screenshot.png)
+![Eskom Strategic Intelligence executive dashboard preview](assets/eskom-power-bi-preview.svg)
+
+Presentation preview using governed project metrics. Recorded Power BI Desktop runtime validation is documented separately in `docs/POWER_BI_RUNBOOK.md`.
 
 | Executive KPI | Latest value | Evidence status |
 |---|---:|---|
