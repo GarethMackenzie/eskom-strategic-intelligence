@@ -19,12 +19,12 @@ during the build. No private customer, employee or operational data is used.
 | Automated repository QA | PASS — 17 build checks and 32 tests |
 | GitHub Actions | PASS — pull request #1 release-candidate checks |
 | Power BI Desktop model runtime | PASS — compatibility level 1606 |
-| Human visual/accessibility sign-off | PENDING HUMAN SIGN-OFF |
+| Human visual/accessibility sign-off | PASS — user-confirmed final review completed |
 | Power BI Service publication | Not part of the repository release |
 
 ## Dashboard preview
 
-![Eskom Strategic Intelligence Power BI Desktop dashboard](https://cdn.jsdelivr.net/gh/GarethMackenzie/eskom-strategic-intelligence@7072436f7f6a53257161b7f2faa5c283c86511ad/assets/eskom-power-bi-dashboard-screenshot.png)
+![Eskom Strategic Intelligence Power BI Desktop dashboard](assets/eskom-power-bi-dashboard-screenshot.png)
 
 | Executive KPI | Latest value | Evidence status |
 |---|---:|---|

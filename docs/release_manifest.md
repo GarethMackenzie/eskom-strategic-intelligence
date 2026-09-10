@@ -10,7 +10,7 @@
   HEAD and the pull-request checks as the authoritative candidate identity
 - GitHub Actions: PASS — pull request #1 release-candidate checks
 - Power BI Desktop model runtime: PASS — Desktop 2.157.1354.0 on 8 September 2026
-- Human visual/accessibility inspection: PENDING HUMAN SIGN-OFF
+- Human visual/accessibility inspection: PASS — user-confirmed final review completed
 - Power BI Service publication: OUTSIDE REPOSITORY RELEASE SCOPE
 
 No tag or GitHub release is created by this candidate. The proposed release tag is `v1.0.0` only
@@ -72,6 +72,6 @@ sign-off.
 
 ## Known boundaries
 
-Complete municipality-level arrears, coal-specific security metrics, long-run sales/EAF history,
-final human visual/accessibility inspection and Power BI Service publication remain outside the
-automated repository gate. See `limitations.md` and `PRIMARY_SOURCE_UPGRADE_BACKLOG.md`.
+Complete municipality-level arrears, coal-specific security metrics, long-run sales/EAF history and
+Power BI Service publication remain outside the automated repository gate. See `limitations.md` and
+`PRIMARY_SOURCE_UPGRADE_BACKLOG.md`.

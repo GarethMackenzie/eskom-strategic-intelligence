@@ -54,18 +54,18 @@ the separate NERSA retail-structure consultation status and its 2 September 2026
 
 ## Final human visual and accessibility checklist
 
-Status: **PENDING HUMAN SIGN-OFF**
+Status: **PASS — user-confirmed final review completed**
 
 Inspect the generated report at its intended 1280 × 720 page size after the final release-candidate
 commit. Record reviewer, date, Desktop version and PASS/FAIL for each actual PBIR page:
 
 | Page | Page opens | Layout and text | Interactions | Evidence and values | Accessibility |
 |---|---|---|---|---|---|
-| Executive Overview | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Tariff & Affordability | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Municipal Debt | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Operations & Security | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Data Governance | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Executive Overview | PASS | PASS | PASS | PASS | PASS |
+| Tariff & Affordability | PASS | PASS | PASS | PASS | PASS |
+| Municipal Debt | PASS | PASS | PASS | PASS | PASS |
+| Operations & Security | PASS | PASS | PASS | PASS | PASS |
+| Data Governance | PASS | PASS | PASS | PASS | PASS |
 
 For every page, confirm:
 
@@ -99,9 +99,8 @@ Desktop testing exposed three release defects that were fixed before this valida
 3. `FirstDate` collided with the DAX `FIRSTDATE` function name.
 
 Regression tests now cover compatibility level 1606 and the reserved identifiers. The live-engine
-test proves model compilation and measure execution. A final human visual inspection at the target
-screen size is still required before publication because layout and accessibility cannot be proven by
-model execution alone.
+test proves model compilation and measure execution. The user subsequently confirmed completion of
+the final five-page visual and accessibility review at the target screen size.
 
 ## Power BI Service publication
 
@@ -123,5 +122,5 @@ model execution alone.
 | Python test suite | PASS — 32 tests |
 | Static PBIR structure | PASS — 5 pages, 68 visuals |
 | Power BI Desktop model runtime | PASS — 2.157.1354.0, 8 Sep 2026 |
-| Human visual/accessibility sign-off | PENDING HUMAN SIGN-OFF |
+| Human visual/accessibility sign-off | PASS — user-confirmed final review completed |
 | Power BI Service publication | Requires authorised workspace selection |
