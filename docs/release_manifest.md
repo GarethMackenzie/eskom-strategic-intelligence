@@ -2,24 +2,22 @@
 
 ## Release identity
 
-- Release: v1.0.0 release candidate
-- Release date: 9 September 2026
-- Release branch: `release/v1-final-hardening`
-- Baseline main commit: `ca10118af4db78341e6656fbb2ab47e22ad8754c`
-- Release-candidate commit: assigned by Git when this manifest is committed; use the current branch
-  HEAD and the pull-request checks as the authoritative candidate identity
-- GitHub Actions: PASS — pull request #1 release-candidate checks
-- Power BI Desktop model runtime: PASS — Desktop 2.157.1354.0 on 8 September 2026
-- Human visual/accessibility inspection: PASS — user-confirmed final review completed
+- Target release: `v1.0.0`
+- Release readiness date: 10 September 2026
+- Documentation branch: `docs/final-readme-release-polish`
+- Baseline main commit for this documentation pass: `64300563f716ec9298e76169fc92a872076b4e88`
+- GitHub release status: **READY FOR MANUAL PUBLICATION, NOT YET PUBLISHED**
+- Power BI Desktop model runtime: PASS, Desktop 2.157.1354.0 on 8 September 2026
+- Human visual/accessibility inspection: PASS, user-confirmed final review completed
 - Power BI Service publication: OUTSIDE REPOSITORY RELEASE SCOPE
 
-No tag or GitHub release is created by this candidate. The proposed release tag is `v1.0.0` only
-after pull-request approval, passing CI, and recorded human visual/accessibility sign-off.
+The `v1.0.0` tag and GitHub release must point to the final `main` commit after this documentation
+pass is merged and Data Integrity CI succeeds on that exact commit. This manifest does not claim a
+GitHub release before it exists.
 
-GitHub repository metadata was checked on 9 September 2026. All 14 approved discovery topics are
-present. The root `LICENSE` remains canonical MIT text, although GitHub's external metadata endpoint
-currently reports `Other` / `NOASSERTION`; the valid legal text was not altered to influence the
-detector.
+The root `LICENSE` contains canonical MIT text. GitHub has previously reported `Other` /
+`NOASSERTION` for repository licence metadata, so the legal text is left unchanged rather than
+modified to influence detection.
 
 ## Reproducible inventory
 
@@ -49,26 +47,42 @@ detector.
 3. Generate TMDL, PBIR, DAX and preview assets only after QA passes.
 4. Run all 32 pytest tests and Ruff lint/format checks.
 5. Rebuild twice and require zero tracked difference.
-6. Require passing pull-request CI.
-7. Complete and record the five-page human checklist in `POWER_BI_RUNBOOK.md`.
+6. Require passing GitHub Actions on the final `main` commit.
+7. Keep the completed five-page human checklist recorded in `POWER_BI_RUNBOOK.md`.
 
 ## Recorded runtime result
 
 Power BI Desktop 2.157.1354.0 opened the generated compatibility-level-1606 project on
 8 September 2026. All 34 measures reported a valid engine state. A live DAX query returned the
 expected headline values, 21 period rows, 29 metric rows, 4 tariff rows, 1 scenario row and 40
-source-register rows. This proves model compilation and execution, not final visual or accessibility
-sign-off.
+source-register rows.
 
-## Provenance hardening in this candidate
+The final five-page visual and accessibility review was subsequently completed and is recorded as
+PASS in `POWER_BI_RUNBOOK.md`.
 
-- DS002, DS004, DS005, DS007, DS010 and DS011: upgraded to the official FY2026 Eskom reporting
+## Provenance hardening
+
+- DS002, DS004, DS005, DS007, DS010 and DS011 were upgraded to the official FY2026 Eskom reporting
   suite after checking metric, period, units and reporting scope.
-- DS025: corrected to NERSA's official 87.74c/kWh temporary ferrochrome-smelter relief for calendar
-  2026; the unsupported secondary 62c/kWh claim was removed.
-- DS027: upgraded to Eskom's direct statement.
-- DS013: official evidence confirms four load-shedding days; the 26-hour component remains clearly
+- DS025 was corrected to NERSA's official 87.74c/kWh temporary ferrochrome-smelter relief for
+  calendar 2026. The unsupported secondary 62c/kWh claim was removed.
+- DS027 was upgraded to Eskom's direct statement.
+- DS013 uses official evidence for four load-shedding days. The 26-hour component remains clearly
   qualified as secondary-only.
+
+## Manual publication procedure
+
+After this documentation pass reaches `main` and Data Integrity CI succeeds on the resulting SHA:
+
+1. Create tag `v1.0.0` from that exact `main` commit.
+2. Create GitHub release **Eskom Strategic Intelligence v1.0.0** from the same tag.
+3. State that the release includes the source-controlled PBIP/PBIR/TMDL project, 34 explicit DAX
+   measures, 40 governed sources, 17 release-blocking checks, 32 automated tests, 5 report pages and
+   68 visuals.
+4. Record the completed Power BI Desktop runtime validation and human visual/accessibility review.
+5. Describe the R74.4bn / R55.3bn source-scope correction and the separation of actuals, in-year
+   observations, regulatory paths and management scenarios.
+6. Do not claim Power BI Service publication.
 
 ## Known boundaries
 
