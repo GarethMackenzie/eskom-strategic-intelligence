@@ -74,8 +74,8 @@ state, `.platform` metadata and `.pbix` binaries are ignored.
 
 The current runtime result is recorded in `docs/POWER_BI_RUNBOOK.md`: Desktop 2.157.1354.0 opened
 the final generated model, all 34 measures compiled, and a live DAX query returned the expected
-headline values and row counts. This does not replace final human visual/accessibility review at
-the target display size.
+headline values and row counts. The final five-page visual and accessibility review was subsequently
+completed and is recorded as PASS in the runbook.
 
 ## Remaining limitations
 
