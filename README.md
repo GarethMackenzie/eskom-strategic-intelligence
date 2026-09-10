@@ -40,7 +40,7 @@ Presentation preview using governed project metrics. Recorded Power BI Desktop r
 | FY2031 arrears | **R358bn** | Eskom management no-intervention scenario |
 | Governed sources | **40** | Latest evidence 2 September 2026 |
 
-**Municipal arrears trend, FY2015-FY2026:** `▁▁▁▂▂▃▃▄▅▆▇█` from R5.0bn to R111.6bn.
+**Municipal arrears trend, FY2015–FY2026:** `▁▁▁▂▂▃▃▄▅▆▇█` from R5.0bn to R111.6bn.
 
 ## Architecture
 
