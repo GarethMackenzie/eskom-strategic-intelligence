@@ -15,9 +15,11 @@ The `v1.0.0` tag and GitHub release must point to the final `main` commit after 
 pass is merged and Data Integrity CI succeeds on that exact commit. This manifest does not claim a
 GitHub release before it exists.
 
-The root `LICENSE` contains canonical MIT text. GitHub has previously reported `Other` /
-`NOASSERTION` for repository licence metadata, so the legal text is left unchanged rather than
-modified to influence detection.
+The root `LICENSE` previously reported as `Other`/`NOASSERTION` by GitHub's license detector was
+missing the standard "...and to permit persons to whom the Software is furnished to do so," clause
+present in every sibling repository's MIT text (commit `7a3c798`, 13 September 2026). That textual
+deviation, not the detector or any packaging metadata, was the root cause. The file now uses the
+identical canonical MIT template used across the rest of the portfolio.
 
 ## Reproducible inventory
 
