@@ -65,7 +65,7 @@ SELECT
     last_year,
     first_value,
     last_value,
-    ROUND(100.0 * (POWER(last_value / first_value, 1.0 / (last_year - first_year)) - 1), 2)
+    ROUND(100.0 * (POWER(CAST(last_value AS REAL) / NULLIF(first_value, 0), 1.0 / (last_year - first_year)) - 1), 2)
         AS long_run_cagr_pct
 FROM (
     SELECT b.first_year, b.last_year,

@@ -25,7 +25,7 @@ latest_sales AS (
     FROM fact_electricity_sales WHERE segment_key = 0
 )
 SELECT 'Municipal arrears (latest reported)' AS kpi_name,
-       CAST(gross_arrears_rand / 1000000000 AS VARCHAR) AS kpi_value, 'R billion' AS kpi_unit,
+       CAST(gross_arrears_rand / 1000000000.0 AS VARCHAR) AS kpi_value, 'R billion' AS kpi_unit,
        source_dataset_id, evidence_type
 FROM latest_group_debt WHERE rn = 1
 UNION ALL
@@ -38,7 +38,7 @@ FROM latest_sales WHERE rn = 1;
 DROP VIEW IF EXISTS vw_executive_kpis_scenario;
 CREATE VIEW vw_executive_kpis_scenario AS
 SELECT 'SCENARIO -- NOT MANAGEMENT FORECAST' AS display_label,
-       scenario_name, projected_arrears_rand / 1000000000 AS projected_arrears_r_billion,
+       scenario_name, projected_arrears_rand / 1000000000.0 AS projected_arrears_r_billion,
        source_dataset_id
 FROM fact_municipal_debt_scenario;
 
